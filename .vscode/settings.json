@@ -1,0 +1,7 @@
+{
+    "files.associations": {
+        "stm32f446xx.h": "c",
+        "stddef.h": "c",
+        "system_stm32f4xx.h": "c"
+    }
+}

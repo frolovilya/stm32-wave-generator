@@ -1,0 +1,24 @@
+{
+    "configurations": [
+        {
+            "name": "STM32",
+            "includePath": [
+                "${workspaceFolder}/**"
+            ],
+            "defines": [],
+            "compilerPath": "/usr/local/bin/arm-none-eabi-gcc",
+            "intelliSenseMode": "gcc-arm",
+            "compilerArgs": [
+                "-mcpu=cortex-m4", 
+                "-mfpu=fpv4-sp-d16", 
+                "-mfloat-abi=hard",
+                "-DDEBUG",
+                "-DSTM32F446xx",
+                "-DUSE_HAL_DRIVER"
+            ],
+            "cStandard": "c11",
+            "cppStandard": "c++17"
+        }
+    ],
+    "version": 4
+}

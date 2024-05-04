@@ -1,0 +1,26 @@
+# ninja log v6
+10	1156	1714821019206757281	CMakeFiles/stm32-wave-generator.dir/src/sys/system_stm32f4xx.c.obj	8a04ec8bb5ec23b
+6	159	1714809397535465663	CMakeFiles/stm32-wave-generator.dir/src/sys/sysmem.c.obj	9ebf218e9b0d5a61
+4	1005	1714827465246761075	CMakeFiles/stm32-wave-generator.dir/src/uart.c.obj	2158c19c07c22930
+6	1181	1714824126586051939	CMakeFiles/stm32-wave-generator.dir/src/rcc.c.obj	3a0fc72bc76742fc
+2	129	1714809263363136511	CMakeFiles/stm32-wave-generator.dir/src/sysmem.c.obj	84444c0730dd19ba
+1005	1364	1714827466247666324	stm32-wave-generator.elf	16b93c1df7e6169d
+6	960	1714826667546610607	CMakeFiles/stm32-wave-generator.dir/src/main.c.obj	84373f888a13721f
+3	94	1714383277192522095	CMakeFiles/stm32-wave-generator.dir/src/boot/system_init.c.obj	434bc6cd6a0899fe
+4	249	1714809397533532683	CMakeFiles/stm32-wave-generator.dir/src/sys/syscalls.c.obj	d257df4deed8a834
+1	140	1714809230681898730	CMakeFiles/stm32-wave-generator.dir/src/syscalls.c.obj	a8ffe8c71d21e98b
+5	56	1714383277194291420	CMakeFiles/stm32-wave-generator.dir/src/boot/startup_stm32f446xx.s.obj	acfb5a617d9ac7c4
+5	861	1714827215623080475	CMakeFiles/stm32-wave-generator.dir/src/timer.c.obj	8081678ede077589
+6	659	1714827882091772350	CMakeFiles/stm32-wave-generator.dir/src/rcc.c.obj	3a0fc72bc76742fc
+659	880	1714827882744329787	stm32-wave-generator.elf	16b93c1df7e6169d
+7	1052	1714828202697602703	CMakeFiles/stm32-wave-generator.dir/src/rcc.c.obj	3a0fc72bc76742fc
+1052	1315	1714828203741976009	stm32-wave-generator.elf	16b93c1df7e6169d
+7	1204	1714828248305153488	CMakeFiles/stm32-wave-generator.dir/src/main.c.obj	84373f888a13721f
+1205	1617	1714828249503089572	stm32-wave-generator.elf	16b93c1df7e6169d
+4	779	1714828344170676887	CMakeFiles/stm32-wave-generator.dir/src/rcc.c.obj	3a0fc72bc76742fc
+6	787	1714828344172316560	CMakeFiles/stm32-wave-generator.dir/src/uart.c.obj	2158c19c07c22930
+787	1036	1714828344953266515	stm32-wave-generator.elf	16b93c1df7e6169d
+6	303	1714828376848307120	CMakeFiles/stm32-wave-generator.dir/src/rcc.c.obj	3a0fc72bc76742fc
+305	460	1714828377147221362	stm32-wave-generator.elf	16b93c1df7e6169d
+2	410	1714828398942185866	CMakeFiles/stm32-wave-generator.dir/src/rcc.c.obj	3a0fc72bc76742fc
+410	556	1714828399350414864	stm32-wave-generator.elf	16b93c1df7e6169d
