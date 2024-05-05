@@ -57,9 +57,10 @@ target_sources(stm32-drivers INTERFACE
     ./src/sys/syscalls.c
     ./src/sys/sysmem.c
     ./src/sys/system_stm32f4xx.c
-    ./src/rcc.c
-    ./src/timer.c
-    ./src/uart.c
+    ./src/peripherals/rcc.c
+    ./src/peripherals/timer.c
+    ./src/peripherals/uart.c
+    ./src/peripherals/dac.c
     ./src/boot/startup_stm32f446xx.s
 )
 

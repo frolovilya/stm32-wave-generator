@@ -1,5 +1,0 @@
-/Users/frolovilya/Dev/workspace/projects/stm32-wave-generator/build/CMakeFiles/stm32-wave-generator.dir
-/Users/frolovilya/Dev/workspace/projects/stm32-wave-generator/build/CMakeFiles/edit_cache.dir
-/Users/frolovilya/Dev/workspace/projects/stm32-wave-generator/build/CMakeFiles/rebuild_cache.dir
-/Users/frolovilya/Dev/workspace/projects/stm32-wave-generator/build/drivers/CMakeFiles/edit_cache.dir
-/Users/frolovilya/Dev/workspace/projects/stm32-wave-generator/build/drivers/CMakeFiles/rebuild_cache.dir

@@ -2,6 +2,10 @@
     "files.associations": {
         "stm32f446xx.h": "c",
         "stddef.h": "c",
-        "system_stm32f4xx.h": "c"
+        "system_stm32f4xx.h": "c",
+        "uart.h": "c",
+        "rcc.h": "c",
+        "timer.h": "c",
+        "dac.h": "c"
     }
 }
