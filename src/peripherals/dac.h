@@ -3,7 +3,7 @@
 
 #include <stdint.h>
 
-void configure_dac(uint16_t *dacBuffer, uint16_t dataLength);
-void start_dac();
+void configure_dac();
+void start_dac(uint16_t *dacBuffer, uint16_t dataLength);
 
 #endif

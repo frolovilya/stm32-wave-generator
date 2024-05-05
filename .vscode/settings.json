@@ -6,6 +6,12 @@
         "uart.h": "c",
         "rcc.h": "c",
         "timer.h": "c",
-        "dac.h": "c"
+        "dac.h": "c",
+        "math.h": "c",
+        "stdint.h": "c",
+        "tuple": "c",
+        "waves.h": "c",
+        "limits": "c",
+        "stdlib.h": "c"
     }
 }

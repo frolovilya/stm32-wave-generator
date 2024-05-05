@@ -9,7 +9,7 @@ static void configure_dac_gpioa() {
     GPIOA->PUPDR &= ~GPIO_PUPDR_PUPD4; // no pull
 }
 
-static void configure_dac_dma(uint16_t *dacBuffer, uint16_t dataLength) {
+static void configure_dac_dma() {
     RCC->AHB1ENR |= RCC_AHB1ENR_DMA1EN; // enable clock for DMA1
 
     // using DMA Stream 5
@@ -31,18 +31,13 @@ static void configure_dac_dma(uint16_t *dacBuffer, uint16_t dataLength) {
     DMA1_Stream5->CR |= DMA_SxCR_HTIE; // half transfer interrupt enable
     DMA1_Stream5->CR |= DMA_SxCR_TEIE; // transfer error interrupt enable
 
-    // memory address
-    DMA1_Stream5->NDTR = dataLength / 2;
-    DMA1_Stream5->M0AR = (uint32_t) dacBuffer;
-    DMA1_Stream5->M1AR = (uint32_t) (dacBuffer + dataLength / 2);
-
     // peripheral address
     DMA1_Stream5->PAR = (uint32_t) &(DAC->DHR12R1);
 
     NVIC_EnableIRQ(DMA1_Stream5_IRQn);
 }
 
-void configure_dac(uint16_t *dacBuffer, uint16_t dataLength) {
+void configure_dac() {
     RCC->APB1ENR |= RCC_APB1ENR_DACEN; // enable DAC clock
 
     DAC->CR |= DAC_CR_EN1; // enable Channel 1
@@ -58,10 +53,17 @@ void configure_dac(uint16_t *dacBuffer, uint16_t dataLength) {
     NVIC_EnableIRQ(TIM6_DAC_IRQn);
 
     configure_dac_gpioa();
-    configure_dac_dma(dacBuffer, dataLength);
+    configure_dac_dma();
 }
 
-void start_dac() {
+void start_dac(uint16_t *dacBuffer, uint16_t dataLength) {
+    DMA1_Stream5->CR &= ~DMA_SxCR_EN; // stop DMA
+
+    // memory address
+    DMA1_Stream5->NDTR = dataLength / 2;
+    DMA1_Stream5->M0AR = (uint32_t) dacBuffer;
+    DMA1_Stream5->M1AR = (uint32_t) (dacBuffer + dataLength / 2);
+
     DMA1_Stream5->CR |= DMA_SxCR_EN; // start DMA
 }
 

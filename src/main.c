@@ -7,43 +7,38 @@
 #include "peripherals/timer.h"
 #include "peripherals/uart.h"
 #include "peripherals/dac.h"
-
-#define SAMPLING_RATE 48000
-#define MIN_WAVE_FREQUENCY 20
-#define MAX_WAVE_FREQUENCY 10000
-
-#define BUFFER_SIZE(F) SAMPLING_RATE / F
+#include "waves.h"
 
 static uint16_t dacBuffer[BUFFER_SIZE(MIN_WAVE_FREQUENCY)];
 
-size_t generate_sine_wave(uint16_t frequency) {
-    size_t bufferSize = BUFFER_SIZE(frequency);
+void print_current_frequency() {
+    printf("Freq: %u\n", get_current_frequency());
+}
 
-    for (size_t i = 0; i < bufferSize; i++) {
-        dacBuffer[i] = (sin(2 * M_PI * i / bufferSize) + 1) * 0xfff / 2;
-    }
+void uart_callback(char *str) {
+    size_t bufferSize = generate_sine_wave(str_to_freq(str), &dacBuffer[0]);
+    print_current_frequency();
 
-    return bufferSize;
+    start_dac(&dacBuffer[0], bufferSize);
 }
 
 int main()
 {
     configure_clocks();
     
-    configure_uart(USART2);
+    configure_uart(USART3);
     start_uart();
+    receive_uart(&uart_callback);
 
     configure_timer();
+    configure_dac();
 
-    size_t bufferSize = generate_sine_wave(440);
+    size_t bufferSize = generate_sine_wave(DEFAULT_WAVE_FREQUENCY, &dacBuffer[0]);
 
-    configure_dac(&dacBuffer[0], bufferSize);
-
-    start_dac();
+    start_dac(&dacBuffer[0], bufferSize);
     start_timer();
 
-    char *msg = "Hello, world!\n";
-    printf(msg);
+    print_current_frequency();
 
     while(1) {
     }

@@ -54,6 +54,7 @@ add_subdirectory(drivers)
 
 target_sources(stm32-drivers INTERFACE
     ./src/main.c
+    ./src/waves.c
     ./src/sys/syscalls.c
     ./src/sys/sysmem.c
     ./src/sys/system_stm32f4xx.c
