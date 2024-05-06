@@ -3,14 +3,15 @@
         {
             "name": "STM32",
             "includePath": [
-                "${workspaceFolder}/**"
+                "${workspaceFolder}/**",
+                "/Library/Frameworks/dwf.framework/Headers/"
             ],
             "defines": [],
             "compilerPath": "/usr/local/bin/arm-none-eabi-gcc",
             "intelliSenseMode": "gcc-arm",
             "compilerArgs": [
-                "-mcpu=cortex-m4", 
-                "-mfpu=fpv4-sp-d16", 
+                "-mcpu=cortex-m4",
+                "-mfpu=fpv4-sp-d16",
                 "-mfloat-abi=hard",
                 "-DDEBUG",
                 "-DSTM32F446xx",

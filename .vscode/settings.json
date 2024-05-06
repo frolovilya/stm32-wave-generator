@@ -12,6 +12,11 @@
         "tuple": "c",
         "waves.h": "c",
         "limits": "c",
-        "stdlib.h": "c"
+        "stdlib.h": "c",
+        "cstdlib": "c",
+        "stdio.h": "c",
+        "string.h": "c",
+        "device.h": "c",
+        "dwf.h": "c"
     }
 }

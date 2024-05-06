@@ -1,6 +1,8 @@
 #include "waves.h"
 #include <math.h>
 
+#define PI 3.1415926
+
 // Buffer must fit all samples for a whole period of a given frequency
 #define SAMPLES_COUNT(F) SAMPLING_RATE / F + 1
 
@@ -22,7 +24,7 @@ size_t generate_sine_wave(uint16_t frequency) {
     size_t samplesCount = SAMPLES_COUNT(frequency);
 
     for (size_t i = 0; i < samplesCount; i++) {
-        sampleBuffer[i] = (sin(2 * M_PI * i / samplesCount) + 1) * 0xfff / 2;
+        sampleBuffer[i] = (sin(2 * PI * i / samplesCount) + 1) * 0xfff / 2;
     }
 
     return samplesCount;

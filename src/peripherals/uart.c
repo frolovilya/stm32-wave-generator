@@ -5,7 +5,7 @@ static USART_TypeDef *selectedUart;
 
 #define RX_BUFFER_SIZE 100
 
-static uint32_t rxBuffer[RX_BUFFER_SIZE];
+static char rxBuffer[RX_BUFFER_SIZE];
 static uint16_t rxBufferIndex = 0;
 
 static uart_rx_handler_t rx_callback;
@@ -89,17 +89,19 @@ void USART_Common_IRQHandler() {
         if (rxBufferIndex > RX_BUFFER_SIZE) {
             rxBufferIndex = 0;
         }
-        uint32_t receivedChar = selectedUart->DR;
-        rxBuffer[rxBufferIndex++] = receivedChar;
+        uint32_t receivedData = selectedUart->DR;
+        char receivedChar = (char) receivedData;
+        if (receivedChar != '\0') {
+            rxBuffer[rxBufferIndex++] = receivedChar;
+        }
     }
 
     // invoke RX callback
-    if (selectedUart->SR & USART_SR_IDLE && rxBufferIndex > 0) {
-        char receivedString[rxBufferIndex]; // + \0
-        for (int i = 0; i < rxBufferIndex; i++) {
-            receivedString[i] = (char) rxBuffer[i];
-        }
+    if ((selectedUart->SR & USART_SR_IDLE) && rxBufferIndex > 0) {
+        char receivedString[rxBufferIndex];
+        strncpy(receivedString, rxBuffer, rxBufferIndex - 1);
         receivedString[rxBufferIndex - 1] = '\0';
+        
         rx_callback(receivedString);
 
         rxBufferIndex = 0;
