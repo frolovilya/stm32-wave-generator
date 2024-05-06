@@ -37,6 +37,23 @@ static void configure_dac_dma() {
     NVIC_EnableIRQ(DMA1_Stream5_IRQn);
 }
 
+static void configure_dac_timer() {
+    RCC->APB1ENR |= RCC_APB1ENR_TIM2EN; // enable clock for TIM2
+
+    // APB1 = 84MHz
+    // scaling to 48kHz
+    TIM2->PSC = 10-1; // prescaler
+    TIM2->ARR = 175-1; // period
+    TIM2->CR1 &= ~TIM_CR1_CKD; // clock division by 1
+
+    //TIM2->DIER |= TIM_DIER_UIE; // enable update interrupt
+    //NVIC_EnableIRQ(TIM2_IRQn);
+
+    // The update event is selected as trigger output (TRGO)
+    TIM2->CR2 &= ~TIM_CR2_MMS;
+    TIM2->CR2 |= TIM_CR2_MMS_1;
+}
+
 void configure_dac() {
     RCC->APB1ENR |= RCC_APB1ENR_DACEN; // enable DAC clock
 
@@ -54,6 +71,7 @@ void configure_dac() {
 
     configure_dac_gpioa();
     configure_dac_dma();
+    configure_dac_timer();
 }
 
 void start_dac(uint16_t *dacBuffer, uint16_t dataLength) {
@@ -65,23 +83,26 @@ void start_dac(uint16_t *dacBuffer, uint16_t dataLength) {
     DMA1_Stream5->M1AR = (uint32_t) (dacBuffer + dataLength / 2);
 
     DMA1_Stream5->CR |= DMA_SxCR_EN; // start DMA
+
+    TIM2->CR1 |= TIM_CR1_CEN; // start timer
 }
 
 void TIM6_DAC_IRQHandler() {
     if (DAC->SR & DAC_SR_DMAUDR1) {
         printf("DMA1 Underrun\n");
 
-        // The software should clear the DMAUDRx flag
-        DAC->SR &= ~DAC_SR_DMAUDR1;
+        // The software should clear the DMAUDRx flag by writing it to 1
+        DAC->SR |= DAC_SR_DMAUDR1;
 
         // clear the DMAEN bit of the used DMA stream 
         DAC->CR &= ~DAC_CR_DMAEN1;
 
-        // and re-initialize both DMA and DAC channelx to restart the transfer correctly
-        DAC->CR &= ~DAC_CR_EN1;
-
+        // and re-initialize both DMA 
         DMA1_Stream5->CR &= ~DMA_SxCR_EN;
         DMA1_Stream5->CR |= DMA_SxCR_EN;
+
+        // and DAC channelx to restart the transfer correctly
+        DAC->CR &= ~DAC_CR_EN1;
 
         DAC->CR |= DAC_CR_DMAEN1;
         DAC->CR |= DAC_CR_EN1;

@@ -1,31 +1,29 @@
 #include "waves.h"
 #include <math.h>
-#include <stdlib.h>
 
-static uint16_t current_frequency = 0;
+// Buffer must fit all samples for a whole period of a given frequency
+#define SAMPLES_COUNT(F) SAMPLING_RATE / F + 1
 
-uint16_t str_to_freq(char *str) {
-    int16_t newFreq = atoi(str);
-    if (newFreq < MIN_WAVE_FREQUENCY) {
-        return MIN_WAVE_FREQUENCY;
-    }
-    if (newFreq > MAX_WAVE_FREQUENCY) {
-        return MAX_WAVE_FREQUENCY;
-    }
-    return (uint16_t) newFreq;
-}
+// Buffer size is fixed to fit all frequencies from MIN_WAVE_FREQUENCY to MAX_WAVE_FREQUENCY
+static uint16_t sampleBuffer[SAMPLES_COUNT(MIN_WAVE_FREQUENCY)];
+
+static uint16_t currentFrequency = 0;
 
 uint16_t get_current_frequency() {
-    return current_frequency;
+    return currentFrequency;
 }
 
-size_t generate_sine_wave(uint16_t frequency, uint16_t *buffer) {
-    current_frequency = frequency;
-    size_t bufferSize = BUFFER_SIZE(frequency);
+uint16_t *get_sample_buffer() {
+    return &sampleBuffer[0];
+}
 
-    for (size_t i = 0; i < bufferSize; i++) {
-        buffer[i] = (sin(2 * M_PI * i / bufferSize) + 1) * 0xfff / 2;
+size_t generate_sine_wave(uint16_t frequency) {
+    currentFrequency = frequency;
+    size_t samplesCount = SAMPLES_COUNT(frequency);
+
+    for (size_t i = 0; i < samplesCount; i++) {
+        sampleBuffer[i] = (sin(2 * M_PI * i / samplesCount) + 1) * 0xfff / 2;
     }
 
-    return bufferSize;
+    return samplesCount;
 }

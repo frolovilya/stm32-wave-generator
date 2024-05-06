@@ -84,6 +84,7 @@ int __io_putchar(int ch) {
 }
 
 void USART_Common_IRQHandler() {
+    // fill buffer
     while (selectedUart->SR & USART_SR_RXNE) {
         if (rxBufferIndex > RX_BUFFER_SIZE) {
             rxBufferIndex = 0;
@@ -92,6 +93,7 @@ void USART_Common_IRQHandler() {
         rxBuffer[rxBufferIndex++] = receivedChar;
     }
 
+    // invoke RX callback
     if (selectedUart->SR & USART_SR_IDLE && rxBufferIndex > 0) {
         char receivedString[rxBufferIndex]; // + \0
         for (int i = 0; i < rxBufferIndex; i++) {
