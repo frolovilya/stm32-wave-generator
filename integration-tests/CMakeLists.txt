@@ -4,7 +4,7 @@ set(CMAKE_C_FLAGS ${CMAKE_C_FLAGS} "-Wall -Wextra -O0 -g3")
 
 project(integration-tests)
 
-add_executable(${CMAKE_PROJECT_NAME} main.c device.c uart.c)
+add_executable(${CMAKE_PROJECT_NAME} main.c dwf/device.c dwf/uart.c)
 
 find_library(DWF_LIBRARY dwf)
 find_path(DWF_INCLUDE_DIR dwf.h)

@@ -2,24 +2,44 @@
 #include <string.h>
 #include <unistd.h>
 #include <stdlib.h>
-#include "device.h"
-#include "uart.h"
+#include "dwf/device.h"
+#include "dwf/uart.h"
+
+static void test_command(HDWF device, char *request, char *expectedResponse) {
+    if (!send_uart(device, request, strlen(request))) {
+        return;
+    }
+
+    char *response;
+    if ((response = receive_uart(device)) == NULL) {
+        return;
+    }
+
+    printf("request=%s, expected response=%s, actual response=%s\n\t",
+        request, expectedResponse, response);
+
+    if(strcmp(response, expectedResponse) == 0) {
+        printf("(+) passed\n");
+    } else {
+        printf("(-) failed!\n");
+    }
+
+    free(response);
+}
 
 int main() {
     HDWF device;
-    if (!(device = open_device())) {
+    if ((device = open_device()) < 0) {
         return 1;
     }
 
     configure_uart(device);
 
-    char *request = "555";
-    if (!send_uart(device, request, strlen(request))) {
-        return 1;
-    }
-
-    char *response = receive_uart(device);
-    free(response);
+    test_command(device, "-440", "Freq: 20");
+    test_command(device, "10", "Freq: 20");
+    test_command(device, "123", "Freq: 123");
+    test_command(device, "1000", "Freq: 1000");
+    test_command(device, "100000", "Freq: 20");
 
     close_device(device);
 

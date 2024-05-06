@@ -17,6 +17,7 @@
         "stdio.h": "c",
         "string.h": "c",
         "device.h": "c",
-        "dwf.h": "c"
+        "dwf.h": "c",
+        "assert.h": "c"
     }
 }

@@ -6,6 +6,8 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stddef.h>
+#include <unistd.h>
+#include <time.h>
 #include "device.h"
 
 void configure_uart(HDWF device);
