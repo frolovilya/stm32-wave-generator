@@ -18,6 +18,7 @@
         "string.h": "c",
         "device.h": "c",
         "dwf.h": "c",
-        "assert.h": "c"
+        "assert.h": "c",
+        "scope.h": "c"
     }
 }
