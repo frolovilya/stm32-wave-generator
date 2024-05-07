@@ -1,5 +1,4 @@
 #include "scope.h"
-// #include "dwf.h"
 #include "device.h"
 #include <stddef.h>
 #include <stdio.h>
@@ -11,6 +10,7 @@ typedef unsigned char TRIGSRC;
 typedef int TRIGTYPE;
 typedef int DwfTriggerSlope;
 typedef int ACQMODE;
+typedef int DwfWindow;
 
 static const STS stsDone = 2;
 
@@ -37,11 +37,16 @@ extern int FDwfAnalogInTriggerConditionSet(HDWF hdwf, DwfTriggerSlope trigcond);
 extern int FDwfAnalogInAcquisitionModeSet(HDWF hdwf, ACQMODE acqmode);
 extern int FDwfAnalogInTriggerPositionSet(HDWF hdwf, double secPosition);
 extern int FDwfAnalogInTriggerPositionGet(HDWF hdwf, double *psecPosition);
+extern int FDwfSpectrumWindow(double *rgdWin, int cdWin, DwfWindow iWindow,
+                              const double vBeta, double *vNEBW);
+extern int FDwfSpectrumFFT(const double *rgdData, int cdData, double *rgdBin,
+                           double *rgdPhase, int cdBin);
 
 #define SCOPE_FREQUENCY 100000
 #define SCOPE_CHANNEL 0
 
-static int bufferSize = 1000;
+#define SAMPLE_BUFFER_SIZE 16384
+static double samplesBuffer[SAMPLE_BUFFER_SIZE];
 
 int configure_scope(HDWF device) {
   printf("Configuring Oscilloscope\n");
@@ -53,9 +58,11 @@ int configure_scope(HDWF device) {
   FDwfAnalogInFrequencySet(device, SCOPE_FREQUENCY);
   FDwfAnalogInChannelEnableSet(device, SCOPE_CHANNEL, 1);
 
-  // set the maximum buffer size
-  // FDwfAnalogInBufferSizeInfo(device, NULL, &bufferSize);
-  FDwfAnalogInBufferSizeSet(device, bufferSize);
+  // set the buffer size
+  // int maxBufferSize = 0;
+  // FDwfAnalogInBufferSizeInfo(device, NULL, &maxBufferSize);
+  // printf("Max buffer size: %d\n", maxBufferSize);
+  FDwfAnalogInBufferSizeSet(device, SAMPLE_BUFFER_SIZE);
 
   // set 5V pk2pk input range for all channels
   FDwfAnalogInChannelRangeSet(device, -1, 5.0);
@@ -77,9 +84,7 @@ int configure_scope(HDWF device) {
   return 1;
 }
 
-int acquire_scope(HDWF device) {
-  printf("Starting Oscilloscope data acquisition\n");
-
+int capture_samples(HDWF device) {
   // start
   if (!FDwfAnalogInConfigure(device, 1, 1)) {
     print_last_error("Unable to start Oscilloscope");
@@ -88,11 +93,11 @@ int acquire_scope(HDWF device) {
 
   double hzRate;
   FDwfAnalogInFrequencyGet(device, &hzRate);
-  printf("Samples: %d, Rate: %d Hz\n", bufferSize, (int)hzRate);
+  printf("Capturing %d samples at %d Hz\n", SAMPLE_BUFFER_SIZE, (int)hzRate);
 
-  double triggerPosition;
-  FDwfAnalogInTriggerPositionGet(device, &triggerPosition);
-  printf("Trigger position: %f\n", triggerPosition);
+  // double triggerPosition;
+  // FDwfAnalogInTriggerPositionGet(device, &triggerPosition);
+  // printf("Trigger position: %f\n", triggerPosition);
 
   // wait for acquisition to be done
   STS sts = 0;
@@ -101,23 +106,55 @@ int acquire_scope(HDWF device) {
   }
 
   // get data
-  double samplesBuffer[bufferSize];
   if (!FDwfAnalogInStatusData(device, SCOPE_CHANNEL, samplesBuffer,
-                              bufferSize)) {
+                              SAMPLE_BUFFER_SIZE)) {
     print_last_error("Unable to get Oscilloscope data");
     return 0;
   }
 
-  printf("Oscilloscope data acquisition completed\n");
-
-  for (int i = 0; i < bufferSize; i++) {
-    printf("%f ", samplesBuffer[i]);
-  }
-  printf("\n");
+  printf("Oscilloscope data capturing completed\n");
 
   return 1;
 }
 
-int measure_frequency() { 
-    return 1; 
+double measure_samples_frequency(HDWF device) {
+  double windowBuffer[SAMPLE_BUFFER_SIZE];
+  // DwfWindowFlatTop = 9
+  FDwfSpectrumWindow(windowBuffer, SAMPLE_BUFFER_SIZE, 9, 1, NULL);
+  for (int i = 0; i < SAMPLE_BUFFER_SIZE; i++) {
+    samplesBuffer[i] *= windowBuffer[i];
+  }
+
+  int binsCount = SAMPLE_BUFFER_SIZE / 2 + 1;
+  double fBins[binsCount];
+  FDwfSpectrumFFT(samplesBuffer, SAMPLE_BUFFER_SIZE, fBins, NULL, binsCount);
+
+  int maxBinIndex = 0;
+  double maxBinValue = 0;
+  for (int i = 5; i < binsCount; i++) {
+    if (fBins[i] > maxBinValue) {
+      maxBinValue = fBins[i];
+      maxBinIndex = i;
+    }
+  }
+
+  double hzRate;
+  FDwfAnalogInFrequencyGet(device, &hzRate);
+
+  double maxFrequency = (hzRate / 2 * maxBinIndex) / (binsCount - 1);
+  printf("Frequency: %f\n", maxFrequency);
+
+  return maxFrequency;
+
+  /*printf("Bins:\n");
+  for (int i = 0; i < binsCount; i++) {
+    printf("%f ", fBins[i]);
+  }
+  printf("\n");
+
+  printf("Samples:\n");
+  for (int i = 0; i < SAMPLE_BUFFER_SIZE; i++) {
+    printf("%f ", samplesBuffer[i]);
+  }
+  printf("\n");*/
 }

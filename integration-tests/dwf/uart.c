@@ -31,9 +31,9 @@ static void sleep_ms() {
 
 /**
  * Configure UART protocol for transmitting and receiving data
- * 
+ *
  * @param device DWF device handler
-*/
+ */
 void configure_uart(HDWF device) {
   printf("Configuring UART\n");
 
@@ -58,12 +58,12 @@ void configure_uart(HDWF device) {
 
 /**
  * Send a message via UART protocol
- * 
+ *
  * @param device DWF device handler
- * @param message data to send 
+ * @param message data to send
  * @param length data length
  * @return 1 if successfully send, 0 otherwise
-*/
+ */
 int send_uart(HDWF device, char *message, size_t length) {
   char buffer[length + 1];
   strncpy(buffer, message, length);
@@ -82,10 +82,10 @@ int send_uart(HDWF device, char *message, size_t length) {
 
 /**
  * Receive a message from UART
- * 
+ *
  * @param device DWF device handler
  * @return received data buffer (must be freed after usage)
-*/
+ */
 char *receive_uart(HDWF device) {
   char buffer[RX_BUFFER_SIZE];
   int responseSize = 0;
