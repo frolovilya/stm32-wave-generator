@@ -4,6 +4,7 @@
 #include <stddef.h>
 #include <stm32f446xx.h>
 
+// Callback to be fired on receiving UART data
 typedef void (*uart_rx_handler_t)(char *str);
 
 void configure_uart(USART_TypeDef *uartHandler);

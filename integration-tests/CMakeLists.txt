@@ -7,6 +7,4 @@ project(integration-tests)
 add_executable(${CMAKE_PROJECT_NAME} main.c dwf/device.c dwf/uart.c)
 
 find_library(DWF_LIBRARY dwf)
-find_path(DWF_INCLUDE_DIR dwf.h)
 target_link_libraries(${CMAKE_PROJECT_NAME} ${DWF_LIBRARY})
-include_directories(${DWF_INCLUDE_DIR})

@@ -1,8 +1,8 @@
 #ifndef __WAVES_H__
 #define __WAVES_H__
 
-#include <stdint.h>
 #include <stddef.h>
+#include <stdint.h>
 
 // Using constant sampling rate 48 kHz
 #define SAMPLING_RATE 48000
