@@ -10,7 +10,7 @@
 #include <string.h>
 
 void print_current_frequency() {
-  printf("Freq: %u\n", get_current_frequency());
+  printf("Freq: %u\n", get_current_wave_form(), get_current_frequency());
 }
 
 uint16_t str_to_freq(char *str) {
@@ -25,7 +25,7 @@ uint16_t str_to_freq(char *str) {
 }
 
 void uart_data_received_callback(char *str) {
-  size_t samplesCount = generate_sine_wave(str_to_freq(str));
+  size_t samplesCount = generate_wave(SAW, str_to_freq(str));
   print_current_frequency();
 
   start_dac(get_sample_buffer(), samplesCount);
@@ -40,7 +40,7 @@ int main() {
 
   configure_dac();
 
-  size_t samplesCount = generate_sine_wave(DEFAULT_WAVE_FREQUENCY);
+  size_t samplesCount = generate_wave(SAW, DEFAULT_WAVE_FREQUENCY);
 
   start_dac(get_sample_buffer(), samplesCount);
 

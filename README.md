@@ -1,6 +1,6 @@
 # stm32-wave-generator
 
-STM32F4 wave signal generator with UART control. Uses built-in DAC to produce sin, square and saw waves of a given frequency.
+STM32F4 analog wave generator with precise UART control. Uses built-in DAC to produce waves of various form and frequency.
 
 
 ## Build and Configuration
@@ -10,7 +10,7 @@ STM32F4 wave signal generator with UART control. Uses built-in DAC to produce si
 DAC output pin **A4**.
 
 Using USART2 by default: 
-TX **PA2**, RX **PA3**. Note that on Nucleo boards the pins are routed to ST-Link USB.
+TX **PA2**, RX **PA3**. Note that on Nucleo boards USART2 is routed to ST-Link USB instead.
 
 Using USART3 when built with `-DUSE_USART3`:
 TX **C10**, RX **C11**.
@@ -26,14 +26,14 @@ wave_type frequency_hz
 ```
 Where 
 ```sh
-wave_type: sin | square | saw
+wave_type: sine | square | saw | triangle
 frequency_hz: [20, 20000]
 ```
 
 ### Examples
 ```sh
-% sin 440
-Generating 440Hz sin wave
+% sine 440
+Generating 440Hz sine wave
 ```
 
 ```sh
@@ -46,9 +46,14 @@ Generating 200Hz square wave
 Generating 100Hz saw wave
 ```
 
+```sh
+% triangle 50
+Generating 50Hz triangle wave
+```
+
 ## Integration Tests
 
-Tests are using Digilent WaveForms SDK and require a compatible Analog Discovery device to be plugged-in and connected to the corresponding SMT32F4 pins. The project must be built with `-DUSE_USART3` flag.
+Tests are using Digilent WaveForms SDK and require a compatible Analog Discovery device to be plugged-in and connected to the corresponding SMT32F4 pins.
 
 ```sh
 # Build the main project with USART3 enabled
