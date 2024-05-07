@@ -19,6 +19,7 @@
         "device.h": "c",
         "dwf.h": "c",
         "assert.h": "c",
-        "scope.h": "c"
+        "scope.h": "c",
+        "unistd.h": "c"
     }
 }

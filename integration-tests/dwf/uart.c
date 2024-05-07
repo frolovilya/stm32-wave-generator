@@ -14,8 +14,13 @@ extern int FDwfDigitalUartRx(HDWF hdwf, char *szRx, int cRx, int *pcRx,
                              int *pParity);
 
 #define BAUD_RATE 115200
-#define TX_PIN 0
-#define RX_PIN 1
+
+#ifndef DIGITAL_TX_PIN
+#define DIGITAL_TX_PIN 0
+#endif
+#ifndef DIGITAL_RX_PIN
+#define DIGITAL_RX_PIN 1
+#endif
 
 #define RX_BUFFER_SIZE 100
 
@@ -34,24 +39,25 @@ static void sleep_ms() {
  *
  * @param device DWF device handler
  */
-void configure_uart(HDWF device) {
-  printf("Configuring UART\n");
+void configure_uart() {
+  printf("Configuring UART (pins TX=%d, RX=%d)\n", DIGITAL_TX_PIN, DIGITAL_RX_PIN);
 
-  FDwfDigitalUartRateSet(device, BAUD_RATE);
-  FDwfDigitalUartBitsSet(device, 8);
-  FDwfDigitalUartParitySet(device, 0);
-  FDwfDigitalUartStopSet(device, 1);
-  FDwfDigitalUartTxSet(device, TX_PIN);
-  FDwfDigitalUartRxSet(device, RX_PIN);
+  FDwfDigitalUartRateSet(get_device(), BAUD_RATE);
+  FDwfDigitalUartBitsSet(get_device(), 8);
+  FDwfDigitalUartParitySet(get_device(), 0);
+  FDwfDigitalUartStopSet(get_device(), 1);
+  FDwfDigitalUartTxSet(get_device(), DIGITAL_TX_PIN);
+  FDwfDigitalUartRxSet(get_device(), DIGITAL_RX_PIN);
 
   int responseSize = 0;
   int responseParity = 0;
   char *dummy_buffer = NULL;
 
   // initialize TX, drive with idle level
-  FDwfDigitalUartTx(device, dummy_buffer, 0);
+  FDwfDigitalUartTx(get_device(), dummy_buffer, 0);
   // initialize RX reception
-  FDwfDigitalUartRx(device, dummy_buffer, 0, &responseSize, &responseParity);
+  FDwfDigitalUartRx(get_device(), dummy_buffer, 0, &responseSize,
+                    &responseParity);
 
   sleep_ms();
 }
@@ -64,12 +70,12 @@ void configure_uart(HDWF device) {
  * @param length data length
  * @return 1 if successfully send, 0 otherwise
  */
-int send_uart(HDWF device, char *message, size_t length) {
+int send_uart(char *message, size_t length) {
   char buffer[length + 1];
   strncpy(buffer, message, length);
   buffer[length] = '\n';
 
-  if (!FDwfDigitalUartTx(device, buffer, length + 1)) {
+  if (!FDwfDigitalUartTx(get_device(), buffer, length + 1)) {
     print_last_error("Error sending UART message");
     return 0;
   }
@@ -84,14 +90,14 @@ int send_uart(HDWF device, char *message, size_t length) {
  * Receive a message from UART
  *
  * @param device DWF device handler
- * @return received data buffer (must be freed after usage)
+ * @return received string data buffer (must be freed after usage)
  */
-char *receive_uart(HDWF device) {
+char *receive_uart() {
   char buffer[RX_BUFFER_SIZE];
   int responseSize = 0;
   int responseParity = 0;
   while (responseSize == 0) {
-    if (!FDwfDigitalUartRx(device, buffer, RX_BUFFER_SIZE, &responseSize,
+    if (!FDwfDigitalUartRx(get_device(), buffer, RX_BUFFER_SIZE, &responseSize,
                            &responseParity)) {
       print_last_error("Error receiving UART data");
       return NULL;

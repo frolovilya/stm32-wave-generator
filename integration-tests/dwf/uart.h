@@ -9,8 +9,8 @@
 #include <time.h>
 #include <unistd.h>
 
-void configure_uart(HDWF device);
-int send_uart(HDWF device, char *message, size_t length);
-char *receive_uart(HDWF device);
+void configure_uart();
+int send_uart(char *message, size_t length);
+char *receive_uart();
 
 #endif

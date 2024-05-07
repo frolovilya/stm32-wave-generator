@@ -3,8 +3,8 @@
 
 #include "device.h"
 
-int configure_scope(HDWF device);
-int capture_samples(HDWF device);
-double measure_samples_frequency(HDWF device);
+void configure_scope();
+int capture_samples();
+double measure_frequency();
 
 #endif

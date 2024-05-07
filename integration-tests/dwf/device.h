@@ -5,8 +5,9 @@
 
 typedef int HDWF;
 
-HDWF open_device();
-void close_device(HDWF device);
+HDWF get_device();
+int open_device();
+void close_device();
 void print_last_error(char *prefix);
 
 #endif

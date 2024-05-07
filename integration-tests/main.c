@@ -1,49 +1,27 @@
 #include "dwf/device.h"
 #include "dwf/scope.h"
 #include "dwf/uart.h"
+#include "test_utils.h"
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
 
-static void test_command(HDWF device, char *request, char *expectedResponse) {
-  if (!send_uart(device, request, strlen(request))) {
-    return;
-  }
+static void test_suite() {
+  printf("Testing UART controls\n");
+  test_uart_command("-440", "Freq: 20");
+  test_uart_command("10", "Freq: 20");
+  test_uart_command("123", "Freq: 123");
+  test_uart_command("1000", "Freq: 1000");
+  test_uart_command("100000", "Freq: 20");
 
-  char *response;
-  if ((response = receive_uart(device)) == NULL) {
-    return;
-  }
-
-  printf("request=%s, expected response=%s, actual response=%s\n\t", request,
-         expectedResponse, response);
-
-  if (strcmp(response, expectedResponse) == 0) {
-    printf("(+) passed\n");
-  } else {
-    printf("(-) failed!\n");
-  }
-
-  free(response);
-}
-
-static void test_wave_frequency(HDWF device, int expectedFrequency) {
-  char request[100];
-  int requestLength = sprintf(request, "%d", expectedFrequency);
-  if (!send_uart(device, request, requestLength)) {
-    return;
-  }
-
-  capture_samples(device);
-  double actualFrequency = measure_samples_frequency(device);
-
-  double frequencyDiff = fabs(actualFrequency - expectedFrequency);
-  double diffPercent = frequencyDiff / expectedFrequency * 100;
-
-  printf("expected frequency=%d, actual frequency=%f, diff=%f (%f%%)",
-         expectedFrequency, actualFrequency, frequencyDiff, diffPercent);
+  printf("\nTesting wave generation (tolerance=%d%%)\n",
+         WAVE_FREQUENCY_TOLERANCE_PERCENTS);
+  test_wave_frequency(200);
+  test_wave_frequency(440);
+  test_wave_frequency(2000);
+  test_wave_frequency(5000);
 }
 
 int main() {
@@ -52,23 +30,12 @@ int main() {
     return 1;
   }
 
-  configure_uart(device);
-  configure_scope(device);
+  configure_uart();
+  configure_scope();
 
-  /*test_command(device, "-440", "Freq: 20");
-  test_command(device, "10", "Freq: 20");
-  test_command(device, "123", "Freq: 123");
-  test_command(device, "1000", "Freq: 1000");
-  test_command(device, "100000", "Freq: 20");*/
+  test_suite();
 
-  test_wave_frequency(device, 200);
-  test_wave_frequency(device, 440);
-  test_wave_frequency(device, 2000);
-  test_wave_frequency(device, 5000);
-  // test_wave_frequency(device, 10000);
-  // test_wave_frequency(device, 19000);
-
-  close_device(device);
+  close_device();
 
   return 0;
 }

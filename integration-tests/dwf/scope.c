@@ -35,78 +35,83 @@ extern int FDwfAnalogInTriggerTypeSet(HDWF hdwf, TRIGTYPE trigtype);
 extern int FDwfAnalogInTriggerLevelSet(HDWF hdwf, double voltsLevel);
 extern int FDwfAnalogInTriggerConditionSet(HDWF hdwf, DwfTriggerSlope trigcond);
 extern int FDwfAnalogInAcquisitionModeSet(HDWF hdwf, ACQMODE acqmode);
-extern int FDwfAnalogInTriggerPositionSet(HDWF hdwf, double secPosition);
-extern int FDwfAnalogInTriggerPositionGet(HDWF hdwf, double *psecPosition);
 extern int FDwfSpectrumWindow(double *rgdWin, int cdWin, DwfWindow iWindow,
                               const double vBeta, double *vNEBW);
 extern int FDwfSpectrumFFT(const double *rgdData, int cdData, double *rgdBin,
                            double *rgdPhase, int cdBin);
 
+// Wave generation output sampling frequency is 48KHz
+// Capturing the signal at 100KHz
 #define SCOPE_FREQUENCY 100000
-#define SCOPE_CHANNEL 0
+
+#ifndef SCOPE_CHANNEL
+// Using Channel 1 (index 0) as a default
+#define SCOPE_CHANNEL 1
+#endif
+#define SCOPE_CHANNEL_INDEX SCOPE_CHANNEL-1
 
 #define SAMPLE_BUFFER_SIZE 16384
 static double samplesBuffer[SAMPLE_BUFFER_SIZE];
 
-int configure_scope(HDWF device) {
-  printf("Configuring Oscilloscope\n");
+/**
+ * Configure Oscilloscope to capture wave data
+ */
+void configure_scope() {
+  printf("Configuring Oscilloscope (channel %d)\n", SCOPE_CHANNEL);
 
-  FDwfDeviceAutoConfigureSet(device, 0);
+  FDwfDeviceAutoConfigureSet(get_device(), 0);
 
-  FDwfAnalogInReset(device);
+  FDwfAnalogInReset(get_device());
 
-  FDwfAnalogInFrequencySet(device, SCOPE_FREQUENCY);
-  FDwfAnalogInChannelEnableSet(device, SCOPE_CHANNEL, 1);
+  FDwfAnalogInFrequencySet(get_device(), SCOPE_FREQUENCY);
+  FDwfAnalogInChannelEnableSet(get_device(), SCOPE_CHANNEL_INDEX, 1);
 
   // set the buffer size
   // int maxBufferSize = 0;
-  // FDwfAnalogInBufferSizeInfo(device, NULL, &maxBufferSize);
+  // FDwfAnalogInBufferSizeInfo(get_device(), NULL, &maxBufferSize);
   // printf("Max buffer size: %d\n", maxBufferSize);
-  FDwfAnalogInBufferSizeSet(device, SAMPLE_BUFFER_SIZE);
+  FDwfAnalogInBufferSizeSet(get_device(), SAMPLE_BUFFER_SIZE);
 
   // set 5V pk2pk input range for all channels
-  FDwfAnalogInChannelRangeSet(device, -1, 5.0);
+  FDwfAnalogInChannelRangeSet(get_device(), -1, 5.0);
 
-  FDwfAnalogInAcquisitionModeSet(device, 0); // acqmodeSingle
+  FDwfAnalogInAcquisitionModeSet(get_device(), 0); // acqmodeSingle
 
   // configure Auto trigger
-  FDwfAnalogInTriggerSourceSet(device, 2);      // trigsrcDetectorAnalogIn
-  FDwfAnalogInTriggerAutoTimeoutSet(device, 0); // disable auto trigger
-  FDwfAnalogInTriggerChannelSet(device, SCOPE_CHANNEL);
-  FDwfAnalogInTriggerTypeSet(device, 0); // trigtypeEdge
-  FDwfAnalogInTriggerLevelSet(device, 3);
-  FDwfAnalogInTriggerConditionSet(device, 0); // trigcondRisingPositive
-
-  // FDwfAnalogInTriggerPositionSet(device, bufferSize / 2.0 / SCOPE_FREQUENCY);
+  FDwfAnalogInTriggerSourceSet(get_device(), 2);      // trigsrcDetectorAnalogIn
+  FDwfAnalogInTriggerAutoTimeoutSet(get_device(), 0); // disable auto trigger
+  FDwfAnalogInTriggerChannelSet(get_device(), SCOPE_CHANNEL_INDEX);
+  FDwfAnalogInTriggerTypeSet(get_device(), 0); // trigtypeEdge
+  FDwfAnalogInTriggerLevelSet(get_device(), 3);
+  FDwfAnalogInTriggerConditionSet(get_device(), 0); // trigcondRisingPositive
 
   sleep(2);
-
-  return 1;
 }
 
-int capture_samples(HDWF device) {
+/**
+ * Capture samples into internal buffer
+ *
+ * @return 1 if successful and 0 otherwise
+ */
+int capture_samples() {
   // start
-  if (!FDwfAnalogInConfigure(device, 1, 1)) {
+  if (!FDwfAnalogInConfigure(get_device(), 1, 1)) {
     print_last_error("Unable to start Oscilloscope");
     return 0;
   }
 
   double hzRate;
-  FDwfAnalogInFrequencyGet(device, &hzRate);
+  FDwfAnalogInFrequencyGet(get_device(), &hzRate);
   printf("Capturing %d samples at %d Hz\n", SAMPLE_BUFFER_SIZE, (int)hzRate);
-
-  // double triggerPosition;
-  // FDwfAnalogInTriggerPositionGet(device, &triggerPosition);
-  // printf("Trigger position: %f\n", triggerPosition);
 
   // wait for acquisition to be done
   STS sts = 0;
   while (sts != stsDone) {
-    FDwfAnalogInStatus(device, 1, &sts);
+    FDwfAnalogInStatus(get_device(), 1, &sts);
   }
 
   // get data
-  if (!FDwfAnalogInStatusData(device, SCOPE_CHANNEL, samplesBuffer,
+  if (!FDwfAnalogInStatusData(get_device(), SCOPE_CHANNEL_INDEX, samplesBuffer,
                               SAMPLE_BUFFER_SIZE)) {
     print_last_error("Unable to get Oscilloscope data");
     return 0;
@@ -117,7 +122,12 @@ int capture_samples(HDWF device) {
   return 1;
 }
 
-double measure_samples_frequency(HDWF device) {
+/**
+ * Measure frequency of a sampled signal in internal buffer
+ *
+ * @return signal frequency
+ */
+double measure_frequency() {
   double windowBuffer[SAMPLE_BUFFER_SIZE];
   // DwfWindowFlatTop = 9
   FDwfSpectrumWindow(windowBuffer, SAMPLE_BUFFER_SIZE, 9, 1, NULL);
@@ -139,7 +149,7 @@ double measure_samples_frequency(HDWF device) {
   }
 
   double hzRate;
-  FDwfAnalogInFrequencyGet(device, &hzRate);
+  FDwfAnalogInFrequencyGet(get_device(), &hzRate);
 
   double maxFrequency = (hzRate / 2 * maxBinIndex) / (binsCount - 1);
   printf("Frequency: %f\n", maxFrequency);
