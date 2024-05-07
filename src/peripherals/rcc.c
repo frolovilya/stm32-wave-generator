@@ -2,7 +2,14 @@
 #include <stm32f446xx.h>
 
 /**
- * Configure oscillator and scale system clocks 
+ * Configure oscillator and scale system clocks.
+ * 
+ * System clock 84MHz
+ * 
+ * APB1 peripherals scaled to 42MHz
+ * APB1 timer 84MHz
+ * 
+ * APB2 peripherals and timer 42MHz
 */
 void configure_clocks() {
   RCC->CR |= RCC_CR_HSION; // enable internal 16MHz oscillator

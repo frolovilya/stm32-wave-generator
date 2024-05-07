@@ -16,6 +16,11 @@ set(CMAKE_C_COMPILER ${TOOLCHAIN_PREFIX}gcc)
 set(CMAKE_OBJCOPY ${TOOLCHAIN_PREFIX}objcopy)
 set(CMAKE_TRY_COMPILE_TARGET_TYPE STATIC_LIBRARY)
 
+# Define the build type
+if(NOT CMAKE_BUILD_TYPE)
+    set(CMAKE_BUILD_TYPE "Debug")
+endif()
+
 # MCU specific compiler flags
 set(TARGET_FLAGS "-mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard ")
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${TARGET_FLAGS}")
@@ -33,11 +38,6 @@ set(CMAKE_C_LINK_FLAGS "${CMAKE_C_LINK_FLAGS} -Wl,-Map=${CMAKE_PROJECT_NAME}.map
 set(CMAKE_C_LINK_FLAGS "${CMAKE_C_LINK_FLAGS} -Wl,--start-group -lc -lm -Wl,--end-group")
 set(CMAKE_C_LINK_FLAGS "${CMAKE_C_LINK_FLAGS} -Wl,--print-memory-usage")
 
-# Define the build type
-if(NOT CMAKE_BUILD_TYPE)
-    set(CMAKE_BUILD_TYPE "Debug")
-endif()
-
 # Set the project name
 set(CMAKE_PROJECT_NAME stm32-wave-generator)
 
@@ -48,11 +48,7 @@ message("Build type: " ${CMAKE_BUILD_TYPE})
 enable_language(C ASM)
 
 # Create an executable object type
-add_executable(${CMAKE_PROJECT_NAME})
-
-add_subdirectory(drivers)
-
-target_sources(stm32-drivers INTERFACE
+add_executable(${CMAKE_PROJECT_NAME}
     ./src/main.c
     ./src/waves.c
     ./src/sys/syscalls.c
@@ -64,6 +60,12 @@ target_sources(stm32-drivers INTERFACE
     ./src/boot/startup_stm32f446xx.s
 )
 
-target_link_libraries(${CMAKE_PROJECT_NAME}
+target_compile_definitions(${CMAKE_PROJECT_NAME} PUBLIC
+	USE_USART3
+)
+
+add_subdirectory(drivers)
+
+target_link_libraries(${CMAKE_PROJECT_NAME} PUBLIC
     stm32-drivers
 )

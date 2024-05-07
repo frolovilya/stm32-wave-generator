@@ -17,6 +17,8 @@ extern int FDwfDigitalUartRx(HDWF hdwf, char *szRx, int cRx, int *pcRx,
 #define TX_PIN 0
 #define RX_PIN 1
 
+#define RX_BUFFER_SIZE 100
+
 struct timespec tim, tim2;
 
 static void sleep_ms() {
@@ -85,11 +87,11 @@ int send_uart(HDWF device, char *message, size_t length) {
  * @return received data buffer (must be freed after usage)
 */
 char *receive_uart(HDWF device) {
-  char buffer[100];
+  char buffer[RX_BUFFER_SIZE];
   int responseSize = 0;
   int responseParity = 0;
   while (responseSize == 0) {
-    if (!FDwfDigitalUartRx(device, buffer, 100, &responseSize,
+    if (!FDwfDigitalUartRx(device, buffer, RX_BUFFER_SIZE, &responseSize,
                            &responseParity)) {
       print_last_error("Error receiving UART data");
       return NULL;
