@@ -48,10 +48,14 @@ extern int FDwfSpectrumFFT(const double *rgdData, int cdData, double *rgdBin,
 // Using Channel 1 (index 0) as a default
 #define SCOPE_CHANNEL 1
 #endif
-#define SCOPE_CHANNEL_INDEX SCOPE_CHANNEL-1
+#define SCOPE_CHANNEL_INDEX SCOPE_CHANNEL - 1
 
 #define SAMPLE_BUFFER_SIZE 16384
 static double samplesBuffer[SAMPLE_BUFFER_SIZE];
+
+// start frequency analysis from this bin index to filter out DC offset
+// frequencies
+#define DC_OFFSET_BIN_INDEX 5
 
 /**
  * Configure Oscilloscope to capture wave data
@@ -91,7 +95,7 @@ void configure_scope() {
 /**
  * Capture samples into internal buffer
  *
- * @return 1 if successful and 0 otherwise
+ * @return 1 if successful or 0 otherwise
  */
 int capture_samples() {
   // start
@@ -141,7 +145,7 @@ double measure_frequency() {
 
   int maxBinIndex = 0;
   double maxBinValue = 0;
-  for (int i = 5; i < binsCount; i++) {
+  for (int i = DC_OFFSET_BIN_INDEX; i < binsCount; i++) {
     if (fBins[i] > maxBinValue) {
       maxBinValue = fBins[i];
       maxBinIndex = i;

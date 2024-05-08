@@ -40,7 +40,8 @@ static void sleep_ms() {
  * @param device DWF device handler
  */
 void configure_uart() {
-  printf("Configuring UART (pins TX=%d, RX=%d)\n", DIGITAL_TX_PIN, DIGITAL_RX_PIN);
+  printf("Configuring UART (pins TX=%d, RX=%d)\n", DIGITAL_TX_PIN,
+         DIGITAL_RX_PIN);
 
   FDwfDigitalUartRateSet(get_device(), BAUD_RATE);
   FDwfDigitalUartBitsSet(get_device(), 8);
@@ -68,7 +69,7 @@ void configure_uart() {
  * @param device DWF device handler
  * @param message data to send
  * @param length data length
- * @return 1 if successfully send, 0 otherwise
+ * @return 1 if successfully send or 0 otherwise
  */
 int send_uart(char *message, size_t length) {
   char buffer[length + 1];
@@ -90,7 +91,8 @@ int send_uart(char *message, size_t length) {
  * Receive a message from UART
  *
  * @param device DWF device handler
- * @return received string data buffer (must be freed after usage)
+ * @return received string data buffer (must be freed after usage) or NULL if
+ * error
  */
 char *receive_uart() {
   char buffer[RX_BUFFER_SIZE];

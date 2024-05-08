@@ -9,7 +9,7 @@ static HDWF device = -1;
 /**
  * Get currently open device
  *
- * @return DWF device handler
+ * @return DWF device handler or -1 if error
  */
 HDWF get_device() {
   if (device < 0) {
@@ -21,7 +21,7 @@ HDWF get_device() {
 /**
  * Connect to DWF device
  *
- * @return 1 if successful and 0 otherwise
+ * @return 1 if successful or 0 otherwise
  */
 int open_device() {
   printf("Open automatically the first available device\n");

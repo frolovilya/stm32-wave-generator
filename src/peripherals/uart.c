@@ -54,7 +54,7 @@ static void configure_uart_gpio() {
   GPIOA->OSPEEDR |= GPIO_OSPEEDER_OSPEEDR2 | GPIO_OSPEEDER_OSPEEDR3;
 }
 
-#endif
+#endif // USE_USART3
 
 /**
  * Configure UART peripheral

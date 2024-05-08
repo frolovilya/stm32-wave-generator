@@ -60,9 +60,9 @@ add_executable(${CMAKE_PROJECT_NAME}
     ./src/boot/startup_stm32f446xx.s
 )
 
-target_compile_definitions(${CMAKE_PROJECT_NAME} PUBLIC
-	USE_USART3
-)
+#target_compile_definitions(${CMAKE_PROJECT_NAME} PUBLIC
+#	USE_USART3
+#)
 
 add_subdirectory(drivers)
 
