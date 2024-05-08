@@ -95,7 +95,6 @@ Generating 600Hz triangle wave
 Tests are using [Digilent WaveForms SDK](https://digilent.com/reference/software/waveforms/waveforms-sdk/start) and require a compatible Analog Discovery device to be plugged-in and connected to the corresponding SMT32F4 pins.
 
 ```sh
-# Build and launch tests
 cd ./integration-tests
 mkdir build; cd build
 
@@ -106,5 +105,6 @@ cmake ../ -DSCOPE_CHANNEL 1 \
 
 make
 
+# Run tests
 ./integration-tests
 ```
