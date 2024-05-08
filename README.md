@@ -21,9 +21,9 @@ Build the project using CMake:
 ```sh
 mkdir build; cd build
 
-# Using USART2 by default if -DUSE_USART3 flag isn't provided
+# Using USART2 by default if -DUSE_USART3=1 flag isn't provided
 cmake ../ -DPROGRAMMER_CLI=/PATH/TO/STM32_Programmer_CLI \
-    -DUSE_USART3
+    -DUSE_USART3=0
 
 make
 
@@ -38,7 +38,7 @@ DAC output pin is **A4**.
 Using USART2 by default: 
 TX **PA2**, RX **PA3**. Note that on Nucleo boards USART2 is routed to ST-Link USB instead.
 
-Using USART3 when built with `-DUSE_USART3`:
+Using USART3 when built with `-DUSE_USART3=1`:
 TX **C10**, RX **C11**.
 
 
