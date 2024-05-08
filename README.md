@@ -99,9 +99,9 @@ cd ./integration-tests
 mkdir build; cd build
 
 # The following pins configuration is default
-cmake ../ -DSCOPE_CHANNEL 1 \
-    -DDIGITAL_TX_PIN 0 \
-    -DDIGITAL_RX_PIN 1
+cmake ../ -DSCOPE_CHANNEL=1 \
+    -DDIGITAL_TX_PIN=0 \
+    -DDIGITAL_RX_PIN=1
 
 make
 

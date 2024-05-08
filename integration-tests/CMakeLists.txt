@@ -2,15 +2,20 @@ cmake_minimum_required(VERSION 3.22)
 
 set(CMAKE_C_FLAGS ${CMAKE_C_FLAGS} "-Wall -Wextra -O0 -g3")
 
-if(NOT SCOPE_CHANNEL)
+if(NOT DEFINED SCOPE_CHANNEL)
     set(SCOPE_CHANNEL 1)
 endif()
-if(NOT DIGITAL_TX_PIN)
+message("Scope channel: " ${SCOPE_CHANNEL})
+
+if(NOT DEFINED DIGITAL_TX_PIN)
     set(DIGITAL_TX_PIN 0)
 endif()
-if(NOT DIGITAL_RX_PIN)
+message("Digital TX pin: " ${DIGITAL_TX_PIN})
+
+if(NOT DEFINED DIGITAL_RX_PIN)
     set(DIGITAL_RX_PIN 1)
 endif()
+message("Digital RX pin: " ${DIGITAL_RX_PIN})
 
 project(integration-tests)
 
