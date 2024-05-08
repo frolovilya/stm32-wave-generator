@@ -27,7 +27,7 @@ int open_device() {
   printf("Open automatically the first available device\n");
   if (!FDwfDeviceConfigOpen(-1, 0, &device)) {
     print_last_error("Device open failed");
-    return 0;
+    return -1;
   }
 
   return 1;

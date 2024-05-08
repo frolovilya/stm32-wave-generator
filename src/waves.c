@@ -1,6 +1,7 @@
 #include "waves.h"
 #include <math.h>
 #include <stdlib.h>
+#include <string.h>
 
 #define PI 3.1415926
 
@@ -14,42 +15,99 @@
 // MAX_WAVE_FREQUENCY
 static uint16_t sampleBuffer[SAMPLES_COUNT(MIN_WAVE_FREQUENCY)];
 
-static wave_form currentWaveForm = SIN;
-static uint16_t currentFrequency = 0;
+static WaveForm currentWaveForm;
+static uint16_t currentFrequency;
 
-wave_form get_current_wave_form() { return currentWaveForm; }
+uint16_t *get_sample_buffer() { return sampleBuffer; }
+WaveForm get_current_wave_form() { return currentWaveForm; }
 uint16_t get_current_frequency() { return currentFrequency; }
-uint16_t *get_sample_buffer() { return &sampleBuffer[0]; }
 
-static void generate_sine_wave(size_t samplesCount) {
-  for (size_t i = 0; i < samplesCount; i++) {
-    sampleBuffer[i] = (sin(2 * PI * i / samplesCount) + 1) * AMPLITUDE / 2;
+static const struct {
+  WaveForm val;
+  const char *str;
+} wave_form_conversion[] = {
+    {SINE, "sine"}, {SQUARE, "square"}, {SAW, "saw"}, {TRIANGLE, "triangle"}};
+
+/**
+ * Convert WaveForm enum value to string representation
+ *
+ * @param waveForm WaveForm enum value
+ * @return string representation or NULL if failed to parse
+ */
+char const *wave_form_to_string(WaveForm waveForm) {
+  for (size_t i = 0;
+       i < sizeof(wave_form_conversion) / sizeof(wave_form_conversion[0]);
+       i++) {
+    if (wave_form_conversion[i].val == waveForm) {
+      return wave_form_conversion[i].str;
+    }
+  }
+
+  return NULL;
+}
+
+/**
+ * Convert given string to WaveForm enum value
+ *
+ * @param str string to parse
+ * @param waveFormPtr pointer to store conversion result
+ * @return 1 if successful or 0 otherwise
+ */
+int string_to_wave_form(char *str, WaveForm *waveFormPtr) {
+  for (size_t i = 0;
+       i < sizeof(wave_form_conversion) / sizeof(wave_form_conversion[0]);
+       i++) {
+    if (strcmp(wave_form_conversion[i].str, str) == 0) {
+      *waveFormPtr = wave_form_conversion[i].val;
+      return 1;
+    }
+  }
+
+  return 0;
+}
+
+/**
+ * Convert string to frequency input taking MIN_WAVE_FREQUENCY and
+ * MAX_WAVE_FREQUENCY into account
+ *
+ * @param str input string to parse
+ * @return frequency
+ */
+uint16_t string_to_frequency(char *str) {
+  int newFreq = atoi(str);
+  if (newFreq < MIN_WAVE_FREQUENCY) {
+    return MIN_WAVE_FREQUENCY;
+  }
+  if (newFreq > MAX_WAVE_FREQUENCY) {
+    return MAX_WAVE_FREQUENCY;
+  }
+  return (uint16_t)newFreq;
+}
+
+static void generate_sine_wave(int period) {
+  for (int i = 0; i < period; i++) {
+    sampleBuffer[i] = (sin(2 * PI * i / period) + 1) * AMPLITUDE / 2;
   }
 }
 
-static void generate_square_wave(size_t samplesCount) {
-  for (size_t i = 0; i < samplesCount; i++) {
-    sampleBuffer[i] = i < samplesCount / 2 ? AMPLITUDE : 0;
+static void generate_square_wave(int period) {
+  for (int i = 0; i < period; i++) {
+    sampleBuffer[i] = i < period / 2 ? AMPLITUDE : 0;
   }
 }
 
-static int modulo(int x, int p) {
-    return ((x % p) + p) % p;
-}
+static int modulo(int x, int p) { return ((x % p) + p) % p; }
 
-static void generate_saw_wave(size_t samplesCount) {
-  int period = (int) samplesCount;
-  for (int i = 0; i < (int) samplesCount; i++) {
-    sampleBuffer[i] = AMPLITUDE / period 
-        * abs(modulo(i - period / 2, period));
+static void generate_saw_wave(int period) {
+  for (int i = 0; i < period; i++) {
+    sampleBuffer[i] = AMPLITUDE / period * abs(modulo(i - period / 2, period));
   }
 }
 
-static void generate_triangle_wave(size_t samplesCount) {
-  int period = (int) samplesCount;
-  for (int i = 0; i < (int) samplesCount; i++) {
-    sampleBuffer[i] = 2 * AMPLITUDE / period
-        * abs(modulo(i - period / 4, period) - period / 2);
+static void generate_triangle_wave(int period) {
+  for (int i = 0; i < period; i++) {
+    sampleBuffer[i] = 2 * AMPLITUDE / period *
+                      abs(modulo(i - period / 4, period) - period / 2);
   }
 }
 
@@ -61,23 +119,25 @@ static void generate_triangle_wave(size_t samplesCount) {
  * @param frequency target wave frequency
  * @return generated samples count
  */
-size_t generate_wave(wave_form type, uint16_t frequency) {
+size_t generate_wave(WaveForm type, uint16_t frequency) {
   currentWaveForm = type;
   currentFrequency = frequency;
+
   size_t samplesCount = SAMPLES_COUNT(frequency);
+  int period = (int)samplesCount;
 
   switch (type) {
-  case SIN:
-    generate_sine_wave(samplesCount);
+  case SINE:
+    generate_sine_wave(period);
     break;
   case SQUARE:
-    generate_square_wave(samplesCount);
+    generate_square_wave(period);
     break;
   case SAW:
-    generate_saw_wave(samplesCount);
+    generate_saw_wave(period);
     break;
   case TRIANGLE:
-    generate_triangle_wave(samplesCount);
+    generate_triangle_wave(period);
     break;
   }
 

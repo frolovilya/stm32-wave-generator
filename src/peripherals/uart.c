@@ -6,7 +6,7 @@
 static char rxBuffer[RX_BUFFER_SIZE];
 static uint16_t rxBufferIndex = 0;
 
-static uart_rx_handler_t rx_callback;
+static UART_RX_Handler rxCallback;
 
 #ifdef USE_USART3
 
@@ -108,7 +108,7 @@ void send_uart(char *data, size_t dataLength) {
  *
  * @param callback callback fired on data receival
  */
-void receive_uart(uart_rx_handler_t callback) { rx_callback = callback; }
+void receive_uart(UART_RX_Handler callback) { rxCallback = callback; }
 
 // to support printf via UART
 int __io_putchar(int ch) {
@@ -136,7 +136,7 @@ void USART_Common_IRQHandler() {
     strncpy(receivedString, rxBuffer, rxBufferIndex - 1);
     receivedString[rxBufferIndex - 1] = '\0';
 
-    rx_callback(receivedString);
+    rxCallback(receivedString);
 
     rxBufferIndex = 0;
   }

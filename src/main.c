@@ -9,42 +9,47 @@
 #include <stm32f446xx.h>
 #include <string.h>
 
-void print_current_frequency() {
-  printf("Freq: %u\n", get_current_wave_form(), get_current_frequency());
+void print_usage_help() {
+  printf("Usage: sine|square|saw|triangle %d..%d\n",
+         MIN_WAVE_FREQUENCY, MAX_WAVE_FREQUENCY);
 }
 
-uint16_t str_to_freq(char *str) {
-  int16_t newFreq = atoi(str);
-  if (newFreq < MIN_WAVE_FREQUENCY) {
-    return MIN_WAVE_FREQUENCY;
-  }
-  if (newFreq > MAX_WAVE_FREQUENCY) {
-    return MAX_WAVE_FREQUENCY;
-  }
-  return (uint16_t)newFreq;
+void print_current_wave_info() {
+  printf("Generating %uHz %s wave\n", get_current_frequency(),
+         wave_form_to_string(get_current_wave_form()));
 }
 
-void uart_data_received_callback(char *str) {
-  size_t samplesCount = generate_wave(SAW, str_to_freq(str));
-  print_current_frequency();
+void stream(WaveForm waveForm, uint16_t frequency) {
+  size_t samplesCount = generate_wave(waveForm, frequency);
+  print_current_wave_info();
 
   start_dac(get_sample_buffer(), samplesCount);
+}
+
+void parse_and_apply_received_command(char *str) {
+  char *inputStr = strdup(str);
+
+  WaveForm waveForm;
+  if (!string_to_wave_form(strtok(inputStr, " "), &waveForm)) {
+    print_usage_help();
+    return;
+  }
+
+  uint16_t frequency = string_to_frequency(strtok(NULL, " "));
+  free(inputStr);
+
+  stream(waveForm, frequency);
 }
 
 int main() {
   configure_clocks();
 
-  configure_uart(USART3);
+  configure_uart();
   start_uart();
-  receive_uart(&uart_data_received_callback);
-
+  receive_uart(&parse_and_apply_received_command);
   configure_dac();
 
-  size_t samplesCount = generate_wave(SAW, DEFAULT_WAVE_FREQUENCY);
-
-  start_dac(get_sample_buffer(), samplesCount);
-
-  print_current_frequency();
+  stream(DEFAULT_WAVE_FORM, DEFAULT_WAVE_FREQUENCY);
 
   while (1) {
   }

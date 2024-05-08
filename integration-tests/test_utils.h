@@ -13,6 +13,6 @@
 #define WAVE_FREQUENCY_TOLERANCE_PERCENTS 5
 
 void test_uart_command(char *request, char *expectedResponse);
-void test_wave_frequency(int expectedFrequency);
+void test_wave_frequency(char *waveForm, int expectedFrequency);
 
 #endif
