@@ -1,4 +1,5 @@
 #include "uart.h"
+#include <stdio.h>
 #include <string.h>
 
 #define RX_BUFFER_SIZE 100
@@ -127,18 +128,18 @@ void USART_Common_IRQHandler() {
     char receivedChar = (char)receivedData;
     if (receivedChar != '\0') {
       rxBuffer[rxBufferIndex++] = receivedChar;
+
+      // trigger callback on LF
+      if (receivedChar == '\n') {
+        char receivedString[rxBufferIndex];
+        strncpy(receivedString, rxBuffer, rxBufferIndex - 1);
+        receivedString[rxBufferIndex - 1] = '\0';
+
+        rxCallback(receivedString);
+
+        rxBufferIndex = 0;
+      }
     }
-  }
-
-  // invoke RX callback
-  if ((USARTX->SR & USART_SR_IDLE) && rxBufferIndex > 0) {
-    char receivedString[rxBufferIndex];
-    strncpy(receivedString, rxBuffer, rxBufferIndex - 1);
-    receivedString[rxBufferIndex - 1] = '\0';
-
-    rxCallback(receivedString);
-
-    rxBufferIndex = 0;
   }
 }
 

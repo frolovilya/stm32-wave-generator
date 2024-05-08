@@ -46,14 +46,25 @@ TX **C10**, RX **C11**.
 
 Based on the build setup, connect TX/RX or use serial port control via ST-Link USB.
 
-### Command syntax
+### Command Syntax
 ```sh
-wave_type frequency_hz
+sine|square|saw|triangle 20..20000LF
 ```
-Where 
+Note that `LF(\n)` at the end is required.
+
+### Sending Commands via Serial Port
+
+When using USART2 with Nucleo board or any UART to USB adapter, then it's possible to send commands via serial port.
+
 ```sh
-wave_type: sine | square | saw | triangle
-frequency_hz: [20, 20000]
+# Install picocom serial port terminal
+brew install picocom
+
+# Find your connected device
+ls /dev/tty.*
+
+# Start session (press Ctrl+a Ctrl+x to exit)
+picocom --echo --omap crlf --imap lfcrlf -b 115200 /dev/tty.usbmodem14203
 ```
 
 ### Examples
