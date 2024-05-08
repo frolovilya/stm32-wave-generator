@@ -20,11 +20,13 @@ set(CMAKE_TRY_COMPILE_TARGET_TYPE STATIC_LIBRARY)
 if(NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE "Debug")
 endif()
+message("Build type: " ${CMAKE_BUILD_TYPE})
 
-# Programmer tool
+# Variables
 if(NOT PROGRAMMER_CLI)
     set(PROGRAMMER_CLI /Applications/STMicroelectronics/STM32CubeProgrammer/STM32CubeProgrammer.app/Contents/MacOs/bin/STM32_Programmer_CLI)
 endif()
+message("Programmer CLI: " ${PROGRAMMER_CLI})
 
 # MCU specific compiler flags
 set(TARGET_FLAGS "-mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard ")
@@ -48,7 +50,6 @@ set(CMAKE_PROJECT_NAME stm32-wave-generator)
 
 # Core project settings
 project(${CMAKE_PROJECT_NAME})
-message("Build type: " ${CMAKE_BUILD_TYPE})
 
 enable_language(C ASM)
 
@@ -65,9 +66,14 @@ add_executable(${CMAKE_PROJECT_NAME}
     ./src/boot/startup_stm32f446xx.s
 )
 
-#target_compile_definitions(${CMAKE_PROJECT_NAME} PUBLIC
-#	USE_USART3
-#)
+if (USE_USART3)
+    message("Using USART3")
+    target_compile_definitions(${CMAKE_PROJECT_NAME} PUBLIC
+        USE_USART3
+    )
+else()
+    message("Using USART2")
+endif()
 
 add_subdirectory(drivers)
 
