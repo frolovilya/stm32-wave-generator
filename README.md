@@ -61,21 +61,25 @@ frequency_hz: [20, 20000]
 % sine 440
 Generating 440Hz sine wave
 ```
+![sine-440](https://github.com/frolovilya/stm32-wave-generator/assets/271293/2d8baa18-3032-44dd-9d15-85e10a6b2b6a)
 
 ```sh
 % square 200
 Generating 200Hz square wave
 ```
+![square-200](https://github.com/frolovilya/stm32-wave-generator/assets/271293/21c3fa6d-4aa2-480e-95d7-ad2351046e58)
 
 ```sh
-% saw 100
-Generating 100Hz saw wave
+% saw 300
+Generating 300Hz saw wave
 ```
+![saw-300](https://github.com/frolovilya/stm32-wave-generator/assets/271293/c1e2de59-1d40-44a9-82bd-15b46a5f6384)
 
 ```sh
-% triangle 50
-Generating 50Hz triangle wave
+% triangle 600
+Generating 600Hz triangle wave
 ```
+![triangle-600](https://github.com/frolovilya/stm32-wave-generator/assets/271293/79b30d67-fb2d-41dc-8336-3c95391298d8)
 
 ## Integration Tests
 
