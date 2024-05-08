@@ -17,8 +17,8 @@ static UART_RX_Handler rxCallback;
 
 /**
  * USART3 is using the following pins:
- * TX: C10,
- * RX: C11
+ * TX: PC10,
+ * RX: PC11
  */
 static void configure_uart_gpio() {
   RCC->AHB1ENR |= RCC_AHB1ENR_GPIOCEN; // enable clock for GPIOC
@@ -41,7 +41,10 @@ static void configure_uart_gpio() {
 #define USARTX_EN RCC_APB1ENR_USART2EN
 
 /**
- * USART2 is connected to STLink USB on Nucleo boards
+ * USART2 is connected to STLink USB on Nucleo boards.
+ * Otherwise using the following pins:
+ * TX: PA2
+ * RX: PA3
  */
 static void configure_uart_gpio() {
   RCC->AHB1ENR |= RCC_AHB1ENR_GPIOAEN; // enable clock for GPIOA

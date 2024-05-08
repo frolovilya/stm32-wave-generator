@@ -68,7 +68,7 @@ add_executable(${CMAKE_PROJECT_NAME}
 
 if (USE_USART3)
     message("Using USART3")
-    target_compile_definitions(${CMAKE_PROJECT_NAME} PUBLIC
+    target_compile_definitions(${CMAKE_PROJECT_NAME} PRIVATE
         USE_USART3
     )
 else()
@@ -77,7 +77,7 @@ endif()
 
 add_subdirectory(drivers)
 
-target_link_libraries(${CMAKE_PROJECT_NAME} PUBLIC
+target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE
     stm32-drivers
 )
 
