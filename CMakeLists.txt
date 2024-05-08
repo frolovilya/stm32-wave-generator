@@ -16,9 +16,14 @@ set(CMAKE_C_COMPILER ${TOOLCHAIN_PREFIX}gcc)
 set(CMAKE_OBJCOPY ${TOOLCHAIN_PREFIX}objcopy)
 set(CMAKE_TRY_COMPILE_TARGET_TYPE STATIC_LIBRARY)
 
-# Define the build type
+# Define the default build type
 if(NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE "Debug")
+endif()
+
+# Programmer tool
+if(NOT PROGRAMMER_CLI)
+    set(PROGRAMMER_CLI /Applications/STMicroelectronics/STM32CubeProgrammer/STM32CubeProgrammer.app/Contents/MacOs/bin/STM32_Programmer_CLI)
 endif()
 
 # MCU specific compiler flags
@@ -69,3 +74,8 @@ add_subdirectory(drivers)
 target_link_libraries(${CMAKE_PROJECT_NAME} PUBLIC
     stm32-drivers
 )
+
+# Upload ELF to the device
+add_custom_target(flash
+    COMMAND ${PROGRAMMER_CLI}
+     -c port=swd -w $<TARGET_FILE:${CMAKE_PROJECT_NAME}> -v -rst)
