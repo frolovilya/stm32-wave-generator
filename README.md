@@ -44,8 +44,6 @@ TX **C10**, RX **C11**.
 
 ## Usage
 
-Based on the build setup, connect TX/RX or use serial port control via ST-Link USB.
-
 ### Command Syntax
 ```sh
 sine|square|saw|triangle 20..20000LF
@@ -54,7 +52,7 @@ Note that `LF(\n)` at the end is required.
 
 ### Sending Commands via Serial Port
 
-When using USART2 with Nucleo board or any UART to USB adapter, then it's possible to send commands via serial port.
+When using Nucleo board or any UART to USB adapter it's possible to send commands via a serial port.
 
 ```sh
 # Install picocom serial port terminal
@@ -69,25 +67,25 @@ picocom --echo --omap crlf --imap lfcrlf -b 115200 /dev/tty.usbmodem14203
 
 ### Examples
 ```sh
-% sine 440
+sine 440
 Generating 440Hz sine wave
 ```
 ![sine-440](https://github.com/frolovilya/stm32-wave-generator/assets/271293/2d8baa18-3032-44dd-9d15-85e10a6b2b6a)
 
 ```sh
-% square 200
+square 200
 Generating 200Hz square wave
 ```
 ![square-200](https://github.com/frolovilya/stm32-wave-generator/assets/271293/21c3fa6d-4aa2-480e-95d7-ad2351046e58)
 
 ```sh
-% saw 300
+saw 300
 Generating 300Hz saw wave
 ```
 ![saw-300](https://github.com/frolovilya/stm32-wave-generator/assets/271293/c1e2de59-1d40-44a9-82bd-15b46a5f6384)
 
 ```sh
-% triangle 600
+triangle 600
 Generating 600Hz triangle wave
 ```
 ![triangle-600](https://github.com/frolovilya/stm32-wave-generator/assets/271293/79b30d67-fb2d-41dc-8336-3c95391298d8)
