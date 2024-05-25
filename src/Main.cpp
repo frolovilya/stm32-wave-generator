@@ -1,6 +1,10 @@
 #include "peripherals/Peripherals.hpp"
 #include "waves/Frequency.hpp"
-#include "waves/SineGenerator.hpp"
+#include "waves/SawWave.hpp"
+#include "waves/SineWave.hpp"
+#include "waves/SquareWave.hpp"
+#include "waves/TriangleWave.hpp"
+#include "waves/WaveFactory.hpp"
 #include "waves/WaveForm.hpp"
 #include <iostream>
 #include <memory>
@@ -14,8 +18,6 @@ using namespace std;
 // Max signal amplitude (value) for 12-bit DAC
 constexpr uint16_t amplitude = 0xfff;
 
-static auto waveGenerator = SineGenerator<uint16_t>(samplingRate);
-
 void printUsageHelp() {
   cout << "Usage: sine|square|saw|triangle " << minWaveFrequency << ".."
        << maxWaveFrequency << "\n";
@@ -28,7 +30,7 @@ void printCurrentWaveInfo(WaveForm waveForm, uint16_t frequency) {
 
 void stream(WaveForm waveForm, uint16_t frequency) {
   vector<uint16_t> samples =
-      waveGenerator.generatePeriod(frequency, amplitude, 0);
+      generateWavePeriod(waveForm, samplingRate, frequency, amplitude);
   printCurrentWaveInfo(waveForm, frequency);
 
   dacInstance.start(samples.data(), static_cast<uint16_t>(samples.size()));

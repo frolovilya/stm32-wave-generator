@@ -48,7 +48,7 @@ if(CMAKE_BUILD_TYPE MATCHES Release)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Os -g0")
 endif()
 set(CMAKE_CXX_LINK_FLAGS "${TARGET_FLAGS}")
-set(CMAKE_CXX_LINK_FLAGS "${CMAKE_CXX_LINK_FLAGS} -T \"${CMAKE_SOURCE_DIR}/src/boot/STM32F446RETx_FLASH.ld\"")
+set(CMAKE_CXX_LINK_FLAGS "${CMAKE_CXX_LINK_FLAGS} -T \"${CMAKE_SOURCE_DIR}/src/sys/STM32F446RETx_FLASH.ld\"")
 set(CMAKE_CXX_LINK_FLAGS "${CMAKE_CXX_LINK_FLAGS} --specs=nano.specs")
 set(CMAKE_CXX_LINK_FLAGS "${CMAKE_CXX_LINK_FLAGS} -Wl,-Map=${CMAKE_PROJECT_NAME}.map -Wl,--gc-sections")
 set(CMAKE_CXX_LINK_FLAGS "${CMAKE_CXX_LINK_FLAGS} -Wl,--start-group -lc -lm -Wl,--end-group")
@@ -65,25 +65,21 @@ enable_language(C CXX ASM)
 # Create an executable object type
 add_executable(${CMAKE_PROJECT_NAME}
     ./src/Main.cpp
-    #./src/waves.c
-    ./src/Waves.cpp
-    ./src/waves/WaveForm.cpp
-    ./src/waves/Frequency.cpp
-    #./src/waves/WaveGenerator.cpp
-    #./src/waves/SineGenerator.cpp
+
     ./src/sys/syscalls.c
     ./src/sys/sysmem.c
     ./src/sys/system_stm32f4xx.c
-    #./src/peripherals/rcc.c
+    ./src/sys/startup_stm32f446xx.s
+    
+    ./src/waves/WaveForm.cpp
+    ./src/waves/Frequency.cpp
+    
     ./src/peripherals/Peripherals.cpp
     ./src/peripherals/RCCPeripheral.cpp
-    #./src/peripherals/uart.c
     ./src/peripherals/UARTPeripheral.cpp
     ./src/peripherals/UART2Peripheral.cpp
     ./src/peripherals/UART3Peripheral.cpp
-    #./src/peripherals/dac.c
     ./src/peripherals/DACPeripheral.cpp
-    ./src/boot/startup_stm32f446xx.s
 )
 
 if (USE_USART3)
