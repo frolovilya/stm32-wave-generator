@@ -2,7 +2,7 @@
 #include "Peripherals.hpp"
 #include <stm32f446xx.h>
 
-USART_TypeDef *UART2Peripheral::getPeripheral() { return USART2; }
+USART_TypeDef *UART2Peripheral::getPeripheral() const { return USART2; }
 
 /**
  * USART2 is connected to STLink USB on Nucleo boards.

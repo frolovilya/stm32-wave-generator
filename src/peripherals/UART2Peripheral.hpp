@@ -8,7 +8,7 @@ public:
   void configureGPIO() override;
   void configureRCC() override;
   void configureNVIC() override;
-  USART_TypeDef *getPeripheral() override;
+  USART_TypeDef *getPeripheral() const override;
 };
 
 #endif

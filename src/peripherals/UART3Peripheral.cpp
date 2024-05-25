@@ -2,7 +2,7 @@
 #include "Peripherals.hpp"
 #include <stm32f446xx.h>
 
-USART_TypeDef *UART3Peripheral::getPeripheral() {
+USART_TypeDef *UART3Peripheral::getPeripheral() const {
   return USART3;
 }
 

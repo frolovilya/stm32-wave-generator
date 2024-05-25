@@ -9,7 +9,7 @@ class DACPeripheral : public Peripheral<DAC_TypeDef> {
 public:
   void configure() override;
   void start(uint16_t *dacBuffer, uint16_t dataLength);
-  DAC_TypeDef *getPeripheral() override;
+  DAC_TypeDef *getPeripheral() const override;
 
 private:
   void configureGPIOA();

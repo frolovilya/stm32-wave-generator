@@ -1,34 +1,40 @@
 #include "peripherals/Peripherals.hpp"
-#include "Waves.hpp"
-#include <math.h>
-#include <stddef.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <stm32f446xx.h>
-#include <string.h>
+#include "waves/Frequency.hpp"
+#include "waves/SineGenerator.hpp"
+#include "waves/WaveForm.hpp"
 #include <iostream>
-#include <sstream>
 #include <memory>
+#include <sstream>
+#include <stdexcept>
+#include <stm32f446xx.h>
 #include <string>
 
-void print_usage_help() {
-  printf("Usage: sine|square|saw|triangle %d..%d\n",
-         MIN_WAVE_FREQUENCY, MAX_WAVE_FREQUENCY);
+using namespace std;
+
+// Max signal amplitude (value) for 12-bit DAC
+constexpr uint16_t amplitude = 0xfff;
+
+static auto waveGenerator = SineGenerator<uint16_t>(samplingRate);
+
+void printUsageHelp() {
+  cout << "Usage: sine|square|saw|triangle " << minWaveFrequency << ".."
+       << maxWaveFrequency << "\n";
 }
 
-void print_current_wave_info() {
-  printf("Generating %uHz %s wave\n", get_current_frequency(),
-         wave_form_to_string(get_current_wave_form()));
+void printCurrentWaveInfo(WaveForm waveForm, uint16_t frequency) {
+  cout << "Generating " << frequency << "Hz " << waveFormToString(waveForm)
+       << " wave\n";
 }
 
 void stream(WaveForm waveForm, uint16_t frequency) {
-  size_t samplesCount = generate_wave(waveForm, frequency);
-  print_current_wave_info();
+  vector<uint16_t> samples =
+      waveGenerator.generatePeriod(frequency, amplitude, 0);
+  printCurrentWaveInfo(waveForm, frequency);
 
-  dacInstance.start(get_sample_buffer(), samplesCount);
+  dacInstance.start(samples.data(), static_cast<uint16_t>(samples.size()));
 }
 
-void parse_and_apply_received_command(std::string str) {
+void parseAndApplyReceivedCommand(std::string str) {
   std::istringstream iss(str);
   std::string item;
   std::vector<std::string> splitString;
@@ -37,38 +43,42 @@ void parse_and_apply_received_command(std::string str) {
   }
 
   if (splitString.size() != 2) {
-    print_usage_help();
-    return;
+    throw std::invalid_argument(
+        "Expecting two input parameters: wave and frequency");
   }
 
-  WaveForm waveForm;
-  if (!string_to_wave_form(splitString[0].c_str(), &waveForm)) {
-    print_usage_help();
-    return;
-  }
-
-  uint16_t frequency = string_to_frequency(splitString[1].c_str());
+  WaveForm waveForm = stringToWaveForm(splitString[0]);
+  uint16_t frequency = stringToFrequency(splitString[1]);
   stream(waveForm, frequency);
 }
 
+void tryParseAndApplyReceivedCommand(std::string str) {
+  try {
+    parseAndApplyReceivedCommand(str);
+  } catch (const std::exception &) {
+    printUsageHelp();
+  }
+}
+
 UARTPeripheral *getUARTPeripheral() {
-  #ifdef USE_UART3
+#ifdef USE_UART3
   return &uart3Instance;
-  #else
+#else
   return &uart2Instance;
-  #endif
+#endif
 }
 
 int main() {
-  auto uart = getUARTPeripheral();
+  rccInstance.configure();
 
+  auto uart = getUARTPeripheral();
   uart->configure();
   uart->start();
-  uart->receive(&parse_and_apply_received_command);
+  uart->receive(&tryParseAndApplyReceivedCommand);
 
   dacInstance.configure();
 
-  stream(DEFAULT_WAVE_FORM, DEFAULT_WAVE_FREQUENCY);
+  stream(defaultWaveForm, defaultWaveFrequency);
 
   while (1) {
   }

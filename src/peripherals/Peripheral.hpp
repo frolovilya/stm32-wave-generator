@@ -4,7 +4,9 @@
 template <typename T>
 class Peripheral {
 public:
-  virtual T *getPeripheral() = 0;
+  virtual ~Peripheral() {};
+
+  virtual T *getPeripheral() const = 0;
   virtual void configure() = 0;
 };
 

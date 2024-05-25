@@ -11,7 +11,6 @@ using UART_RX_Handler = void(std::string str);
 
 class UARTPeripheral : public Peripheral<USART_TypeDef> {
 public:
-  virtual USART_TypeDef *getPeripheral() = 0;
   void configure() override;
   void start();
   void send(char *data, size_t dataLength);

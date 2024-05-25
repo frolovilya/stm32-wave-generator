@@ -1,7 +1,7 @@
 #include "RCCPeripheral.hpp"
 #include <stm32f446xx.h>
 
-RCC_TypeDef *RCCPeripheral::getPeripheral() {
+RCC_TypeDef *RCCPeripheral::getPeripheral() const {
   return RCC;
 }
 

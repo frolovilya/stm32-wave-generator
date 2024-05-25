@@ -2,7 +2,7 @@
 #include <iostream>
 #include <stm32f446xx.h>
 
-DAC_TypeDef *DACPeripheral::getPeripheral() {
+DAC_TypeDef *DACPeripheral::getPeripheral() const {
   return DAC;
 }
 

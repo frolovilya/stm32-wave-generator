@@ -67,6 +67,10 @@ add_executable(${CMAKE_PROJECT_NAME}
     ./src/Main.cpp
     #./src/waves.c
     ./src/Waves.cpp
+    ./src/waves/WaveForm.cpp
+    ./src/waves/Frequency.cpp
+    #./src/waves/WaveGenerator.cpp
+    #./src/waves/SineGenerator.cpp
     ./src/sys/syscalls.c
     ./src/sys/sysmem.c
     ./src/sys/system_stm32f4xx.c
