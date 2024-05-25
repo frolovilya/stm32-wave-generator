@@ -1,4 +1,4 @@
-#include "waves.h"
+#include "Waves.hpp"
 #include <math.h>
 #include <stdlib.h>
 #include <string.h>
@@ -53,7 +53,7 @@ char const *wave_form_to_string(WaveForm waveForm) {
  * @param waveFormPtr pointer to store conversion result
  * @return 1 if successful or 0 otherwise
  */
-int string_to_wave_form(char *str, WaveForm *waveFormPtr) {
+int string_to_wave_form(const char *str, WaveForm *waveFormPtr) {
   for (size_t i = 0;
        i < sizeof(wave_form_conversion) / sizeof(wave_form_conversion[0]);
        i++) {
@@ -73,7 +73,7 @@ int string_to_wave_form(char *str, WaveForm *waveFormPtr) {
  * @param str input string to parse
  * @return frequency
  */
-uint16_t string_to_frequency(char *str) {
+uint16_t string_to_frequency(const char *str) {
   int newFreq = atoi(str);
   if (newFreq < MIN_WAVE_FREQUENCY) {
     return MIN_WAVE_FREQUENCY;

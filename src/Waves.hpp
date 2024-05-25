@@ -1,5 +1,5 @@
-#ifndef __WAVES_H__
-#define __WAVES_H__
+#ifndef WAVES_HPP
+#define WAVES_HPP
 
 #include <stddef.h>
 #include <stdint.h>
@@ -25,8 +25,8 @@ uint16_t get_current_frequency();
 uint16_t *get_sample_buffer();
 
 char const *wave_form_to_string(WaveForm waveForm);
-int string_to_wave_form(char *str, WaveForm *waveFormPtr);
-uint16_t string_to_frequency(char *str);
+int string_to_wave_form(const char *str, WaveForm *waveFormPtr);
+uint16_t string_to_frequency(const char *str);
 
 size_t generate_wave(WaveForm type, uint16_t frequency);
 
