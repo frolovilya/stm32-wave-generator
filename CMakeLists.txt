@@ -58,7 +58,7 @@ set(CMAKE_CXX_LINK_FLAGS "${CMAKE_CXX_LINK_FLAGS} -Wl,--print-memory-usage")
 set(CMAKE_PROJECT_NAME stm32-wave-generator)
 
 # Core project settings
-project(${CMAKE_PROJECT_NAME})
+project(${CMAKE_PROJECT_NAME} VERSION 0.1 LANGUAGES CXX)
 
 enable_language(C CXX ASM)
 
@@ -81,6 +81,10 @@ add_executable(${CMAKE_PROJECT_NAME}
     ./src/peripherals/UART3Peripheral.cpp
     ./src/peripherals/DACPeripheral.cpp
 )
+
+find_path(WELLE_HEADER_PATH Welle.hpp PATHS /usr/local/include)
+message("-- Welle Header: " ${WELLE_HEADER_PATH})
+target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE ${WELLE_HEADER_PATH})
 
 if (USE_USART3)
     message("Using USART3")
