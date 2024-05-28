@@ -9,13 +9,13 @@ DAC_TypeDef *DACPeripheral::getPeripheral() const { return DAC; }
  * @param dacBuffer memory address for DMA to transfer DAC data
  * @param dataLength data length
  */
-void DACPeripheral::start(uint16_t *dacBuffer, uint16_t dataLength) {
+void DACPeripheral::start(uint16_t *dacBuffer, int dataLength) {
   DMA1_Stream5->CR &= ~DMA_SxCR_EN; // stop DMA
 
-  // memory address
+  // get memory adresses for double buffering
   DMA1_Stream5->NDTR = dataLength / 2;
-  DMA1_Stream5->M0AR = (uint32_t)dacBuffer;
-  DMA1_Stream5->M1AR = (uint32_t)(dacBuffer + dataLength / 2);
+  DMA1_Stream5->M0AR = reinterpret_cast<uint32_t>(dacBuffer);
+  DMA1_Stream5->M1AR = reinterpret_cast<uint32_t>(dacBuffer + dataLength / 2);
 
   DMA1_Stream5->CR |= DMA_SxCR_EN; // start DMA
 
@@ -52,7 +52,7 @@ void DACPeripheral::configureDMA() {
   DMA1_Stream5->CR |= DMA_SxCR_TEIE; // transfer error interrupt enable
 
   // peripheral address
-  DMA1_Stream5->PAR = (uint32_t) & (DAC->DHR12R1);
+  DMA1_Stream5->PAR = reinterpret_cast<uint32_t>(&(DAC->DHR12R1));
 
   NVIC_EnableIRQ(DMA1_Stream5_IRQn);
 }

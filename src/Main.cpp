@@ -28,7 +28,7 @@ void stream(WaveForm waveForm, uint16_t frequency) {
       generateWavePeriod<uint16_t>(waveForm, samplingRate, frequency, amplitude);
   printCurrentWaveInfo(waveForm, frequency);
 
-  dacInstance.start(samples.data(), static_cast<uint16_t>(samples.size()));
+  dacInstance.start(samples.data(), samples.size());
 }
 
 void parseAndApplyReceivedCommand(std::string str) {
