@@ -1,1 +1,4 @@
-drivers/CMSIS/** linguist-vendored
+* linguist-vendored
+*.cpp linguist-vendored=false
+*.hpp linguist-vendored=false
+CMakeLists.txt linguist-vendored=false
