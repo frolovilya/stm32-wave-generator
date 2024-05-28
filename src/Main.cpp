@@ -6,7 +6,6 @@
 #include <memory>
 #include <sstream>
 #include <stdexcept>
-#include <stm32f446xx.h>
 #include <string>
 
 using namespace std;
@@ -59,7 +58,7 @@ void tryParseAndApplyReceivedCommand(std::string str) {
 }
 
 UARTPeripheral *getUARTPeripheral() {
-#ifdef USE_UART3
+#ifdef USE_USART3
   return &uart3Instance;
 #else
   return &uart2Instance;

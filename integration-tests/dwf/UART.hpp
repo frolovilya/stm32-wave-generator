@@ -12,7 +12,7 @@ class UART {
 public:
   UART(const DwfDeviceHandler &deviceHandler, int baudRate, int txPin, int rxPin);
 
-  void send(std::string message) const;
+  void send(std::string message, bool appendNewLine = true) const;
   std::string receive() const;
 
 private: 

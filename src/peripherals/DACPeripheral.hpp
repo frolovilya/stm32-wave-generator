@@ -3,7 +3,9 @@
 
 #include "Peripheral.hpp"
 #include <cstdint>
+extern "C" {
 #include <stm32f446xx.h>
+}
 
 class DACPeripheral : public Peripheral<DAC_TypeDef> {
 public:

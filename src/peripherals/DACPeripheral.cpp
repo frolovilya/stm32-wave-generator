@@ -1,20 +1,17 @@
 #include "DACPeripheral.hpp"
 #include <iostream>
-#include <stm32f446xx.h>
 
-DAC_TypeDef *DACPeripheral::getPeripheral() const {
-  return DAC;
-}
+DAC_TypeDef *DACPeripheral::getPeripheral() const { return DAC; }
 
 /**
  * Start DAC conversion and DMA transfer
- * 
+ *
  * @param dacBuffer memory address for DMA to transfer DAC data
  * @param dataLength data length
-*/
+ */
 void DACPeripheral::start(uint16_t *dacBuffer, uint16_t dataLength) {
   DMA1_Stream5->CR &= ~DMA_SxCR_EN; // stop DMA
-  
+
   // memory address
   DMA1_Stream5->NDTR = dataLength / 2;
   DMA1_Stream5->M0AR = (uint32_t)dacBuffer;
@@ -97,6 +94,8 @@ void DACPeripheral::configure() {
   configureTimer();
 }
 
+extern "C" {
+
 void TIM6_DAC_IRQHandler() {
   if (DAC->SR & DAC_SR_DMAUDR1) {
     std::cout << "DMA1 Underrun\n";
@@ -130,4 +129,5 @@ void DMA1_Stream5_IRQHandler() {
   }
 
   // std::cout << "CT = " << (DMA1_Stream5->CR & DMA_SxCR_CT) == 0) << "\n";
+}
 }

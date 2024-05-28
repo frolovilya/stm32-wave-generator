@@ -3,9 +3,11 @@
 
 #include "Peripheral.hpp"
 #include <cstdlib>
-#include <stm32f446xx.h>
 #include <functional>
 #include <string>
+extern "C" {
+#include <stm32f446xx.h>
+}
 
 using UART_RX_Handler = void(std::string str);
 
@@ -13,7 +15,7 @@ class UARTPeripheral : public Peripheral<USART_TypeDef> {
 public:
   void configure() override;
   void start();
-  void send(char *data, size_t dataLength);
+  void send(std::string data, bool appendNewLine = true);
   void receive(std::function<UART_RX_Handler> callback);
   void handleInterrupt();
 

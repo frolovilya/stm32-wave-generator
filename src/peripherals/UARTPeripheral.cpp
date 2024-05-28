@@ -1,5 +1,4 @@
 #include "UARTPeripheral.hpp"
-#include <stm32f446xx.h>
 #include <cstring>
 #include <string>
 
@@ -24,18 +23,22 @@ void UARTPeripheral::configure() {
  * Start UART data transfer and receival
  */
 void UARTPeripheral::start() {
-  getPeripheral()->CR1 |= USART_CR1_TE | USART_CR1_RE; // start transmitter and receiver
+  getPeripheral()->CR1 |=
+      USART_CR1_TE | USART_CR1_RE; // start transmitter and receiver
 }
 
 /**
  * Send UART message
- *
+ * 
  * @param data data to send
- * @param dataLength data length
+ * @param appendNewLine whether to append '\n' to the data
  */
-void UARTPeripheral::send(char *data, size_t dataLength) {
-  for (size_t i = 0; i < dataLength; i++) {
-    getPeripheral()->DR = data[i];
+void UARTPeripheral::send(std::string data, bool appendNewLine) {
+  if (appendNewLine) {
+    data += "\n";
+  }
+  for (size_t i = 0; i < data.length(); i++) {
+    getPeripheral()->DR = data.at(i);
     // wait DR to be ready for next data
     while (!(getPeripheral()->SR & USART_SR_TXE))
       ;
@@ -51,11 +54,16 @@ void UARTPeripheral::send(char *data, size_t dataLength) {
  *
  * @param callback callback fired on data receival
  */
-void UARTPeripheral::receive(std::function<UART_RX_Handler> callback) { rxCallback = callback; }
+void UARTPeripheral::receive(std::function<UART_RX_Handler> callback) {
+  rxCallback = callback;
+}
 
 /**
- * Common UART interrupt handler
-*/
+ * Common UART interrupt handler.
+ * Triggering RX callback on receiving '\n' last character.
+ *
+ * MESSAGE\n -> c-string MESSAGE\0 -> std::string
+ */
 void UARTPeripheral::handleInterrupt() {
   // fill buffer
   while (getPeripheral()->SR & USART_SR_RXNE) {

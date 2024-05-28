@@ -1,10 +1,22 @@
 #include "UART3Peripheral.hpp"
 #include "Peripherals.hpp"
+#include <string>
+
+extern "C" {
 #include <stm32f446xx.h>
 
-USART_TypeDef *UART3Peripheral::getPeripheral() const {
-  return USART3;
+void USART3_IRQHandler() { uart3Instance.handleInterrupt(); }
+
+#ifdef USE_USART3
+// to support printf via USART3
+int __io_putchar(int ch) {
+  uart3Instance.send(std::string{static_cast<char>(ch)}, false);
+  return ch;
 }
+#endif
+}
+
+USART_TypeDef *UART3Peripheral::getPeripheral() const { return USART3; }
 
 /**
  * USART3 is using the following pins:
@@ -32,13 +44,3 @@ void UART3Peripheral::configureRCC() {
 void UART3Peripheral::configureNVIC() {
   NVIC_EnableIRQ(USART3_IRQn); // enable interrupts
 }
-
-void USART3_IRQHandler() { uart3Instance.handleInterrupt(); }
-
-#ifdef USE_UART3
-// to support printf via USART3
-int __io_putchar(int ch) {
-  uart3Instance.send((char *)&ch, 1);
-  return ch;
-}
-#endif

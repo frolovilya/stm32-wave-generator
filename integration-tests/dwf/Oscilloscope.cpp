@@ -18,7 +18,7 @@ Oscilloscope::Oscilloscope(const DwfDeviceHandler &deviceHandler, int frequency,
  * Configure Oscilloscope to capture wave data
  */
 void Oscilloscope::configure() {
-  cout << "Configuring Oscilloscope (channel " << channelIndex << ")\n";
+  cout << "Configuring Oscilloscope (channel " << (channelIndex + 1) << ")\n";
 
   const HDWF device = deviceHandler.getDevice();
 
@@ -121,16 +121,4 @@ double Oscilloscope::measureFrequency(const vector<double> &samples) const {
   cout << "Frequency: " << maxFrequency << "\n";
 
   return maxFrequency;
-
-  /*printf("Bins:\n");
-  for (int i = 0; i < binsCount; i++) {
-    printf("%f ", fBins[i]);
-  }
-  printf("\n");
-
-  printf("Samples:\n");
-  for (int i = 0; i < SAMPLE_BUFFER_SIZE; i++) {
-    printf("%f ", samplesBuffer[i]);
-  }
-  printf("\n");*/
 }

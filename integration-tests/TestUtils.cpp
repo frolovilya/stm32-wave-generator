@@ -17,8 +17,8 @@ void testUARTCommand(const UART &uart, string request,
   uart.send(request);
   string response = uart.receive();
 
-  cout << "request=" << request << ", expected response=" << expectedResponse
-       << ", actual response=" << response << "\n";
+  cout << "request=" << request << ", expected response='" << expectedResponse
+       << "', actual response='" << response << "'\n";
 
   if (response == expectedResponse) {
     cout << "\t(+) passed\n";

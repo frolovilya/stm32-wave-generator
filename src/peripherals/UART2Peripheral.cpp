@@ -1,6 +1,20 @@
 #include "UART2Peripheral.hpp"
 #include "Peripherals.hpp"
+#include <string>
+
+extern "C" {
 #include <stm32f446xx.h>
+
+void USART2_IRQHandler() { uart2Instance.handleInterrupt(); }
+
+#ifndef USE_USART3
+// to support printf via USART2
+int __io_putchar(int ch) {
+  uart2Instance.send(std::string{static_cast<char>(ch)}, false);
+  return ch;
+}
+#endif
+}
 
 USART_TypeDef *UART2Peripheral::getPeripheral() const { return USART2; }
 
@@ -29,13 +43,3 @@ void UART2Peripheral::configureRCC() {
 void UART2Peripheral::configureNVIC() {
   NVIC_EnableIRQ(USART2_IRQn); // enable interrupts
 }
-
-void USART2_IRQHandler() { uart2Instance.handleInterrupt(); }
-
-#ifndef USE_UART3
-// to support printf via USART2
-int __io_putchar(int ch) {
-  uart2Instance.send((char *)&ch, 1);
-  return ch;
-}
-#endif
