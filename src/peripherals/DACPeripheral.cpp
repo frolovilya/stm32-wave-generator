@@ -1,15 +1,35 @@
-#include "dac.h"
-#include <stdio.h>
-#include <stm32f446xx.h>
+#include "DACPeripheral.hpp"
+#include <iostream>
 
-static void configure_dac_gpioa() {
+DAC_TypeDef *DACPeripheral::getPeripheral() const { return DAC; }
+
+/**
+ * Start DAC conversion and DMA transfer
+ *
+ * @param dacBuffer memory address for DMA to transfer DAC data
+ * @param dataLength data length
+ */
+void DACPeripheral::start(uint16_t *dacBuffer, int dataLength) {
+  DMA1_Stream5->CR &= ~DMA_SxCR_EN; // stop DMA
+
+  // get memory adresses for double buffering
+  DMA1_Stream5->NDTR = dataLength / 2;
+  DMA1_Stream5->M0AR = reinterpret_cast<uint32_t>(dacBuffer);
+  DMA1_Stream5->M1AR = reinterpret_cast<uint32_t>(dacBuffer + dataLength / 2);
+
+  DMA1_Stream5->CR |= DMA_SxCR_EN; // start DMA
+
+  TIM2->CR1 |= TIM_CR1_CEN; // start timer
+}
+
+void DACPeripheral::configureGPIOA() {
   RCC->AHB1ENR |= RCC_AHB1ENR_GPIOAEN; // enable clock for GPIOA
 
   GPIOA->MODER |= GPIO_MODER_MODER4; // analog mode (11) for GPIOA pin PA4
   GPIOA->PUPDR &= ~GPIO_PUPDR_PUPD4; // no pull
 }
 
-static void configure_dac_dma() {
+void DACPeripheral::configureDMA() {
   RCC->AHB1ENR |= RCC_AHB1ENR_DMA1EN; // enable clock for DMA1
 
   // using DMA Stream 5
@@ -32,12 +52,12 @@ static void configure_dac_dma() {
   DMA1_Stream5->CR |= DMA_SxCR_TEIE; // transfer error interrupt enable
 
   // peripheral address
-  DMA1_Stream5->PAR = (uint32_t) & (DAC->DHR12R1);
+  DMA1_Stream5->PAR = reinterpret_cast<uint32_t>(&(DAC->DHR12R1));
 
   NVIC_EnableIRQ(DMA1_Stream5_IRQn);
 }
 
-static void configure_dac_timer() {
+void DACPeripheral::configureTimer() {
   RCC->APB1ENR |= RCC_APB1ENR_TIM2EN; // enable clock for TIM2
 
   // APB1 = 84MHz
@@ -54,10 +74,7 @@ static void configure_dac_timer() {
   TIM2->CR2 |= TIM_CR2_MMS_1;
 }
 
-/**
- * Configure DAC peripheral
-*/
-void configure_dac() {
+void DACPeripheral::configure() {
   RCC->APB1ENR |= RCC_APB1ENR_DACEN; // enable DAC clock
 
   DAC->CR |= DAC_CR_EN1;    // enable Channel 1
@@ -72,33 +89,16 @@ void configure_dac() {
 
   NVIC_EnableIRQ(TIM6_DAC_IRQn);
 
-  configure_dac_gpioa();
-  configure_dac_dma();
-  configure_dac_timer();
+  configureGPIOA();
+  configureDMA();
+  configureTimer();
 }
 
-/**
- * Start DAC conversion and DMA transfer
- * 
- * @param dacBuffer memory address for DMA to transfer DAC data
- * @param dataLength data length
-*/
-void start_dac(uint16_t *dacBuffer, uint16_t dataLength) {
-  DMA1_Stream5->CR &= ~DMA_SxCR_EN; // stop DMA
-  
-  // memory address
-  DMA1_Stream5->NDTR = dataLength / 2;
-  DMA1_Stream5->M0AR = (uint32_t)dacBuffer;
-  DMA1_Stream5->M1AR = (uint32_t)(dacBuffer + dataLength / 2);
-
-  DMA1_Stream5->CR |= DMA_SxCR_EN; // start DMA
-
-  TIM2->CR1 |= TIM_CR1_CEN; // start timer
-}
+extern "C" {
 
 void TIM6_DAC_IRQHandler() {
   if (DAC->SR & DAC_SR_DMAUDR1) {
-    printf("DMA1 Underrun\n");
+    std::cout << "DMA1 Underrun\n";
 
     // The software should clear the DMAUDRx flag by writing it to 1
     DAC->SR |= DAC_SR_DMAUDR1;
@@ -120,13 +120,14 @@ void TIM6_DAC_IRQHandler() {
 
 void DMA1_Stream5_IRQHandler() {
   if (DMA1->HISR & DMA_HISR_TCIF5) {
-    // printf("Transfer completed\n");
+    // std::cout << "Transfer completed\n";
     DMA1->HIFCR |= DMA_HIFCR_CTCIF5; // clear flag
   }
   if (DMA1->HISR & DMA_HISR_HTIF5) {
-    // printf("Half transfer completed\n");
+    // std::cout << "Half transfer completed\n";
     DMA1->HIFCR |= DMA_HIFCR_CHTIF5; // clear flag
   }
 
-  // printf("CT = %d", (DMA1_Stream5->CR & DMA_SxCR_CT) == 0);
+  // std::cout << "CT = " << (DMA1_Stream5->CR & DMA_SxCR_CT) == 0) << "\n";
+}
 }

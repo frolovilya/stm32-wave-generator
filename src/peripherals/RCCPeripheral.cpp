@@ -1,5 +1,8 @@
-#include "rcc.h"
-#include <stm32f446xx.h>
+#include "RCCPeripheral.hpp"
+
+RCC_TypeDef *RCCPeripheral::getPeripheral() const {
+  return RCC;
+}
 
 /**
  * Configure oscillator and scale system clocks.
@@ -11,7 +14,7 @@
  * 
  * APB2 peripherals and timer 42MHz
 */
-void configure_clocks() {
+void RCCPeripheral::configure() {
   RCC->CR |= RCC_CR_HSION; // enable internal 16MHz oscillator
   while (!(RCC->CR & RCC_CR_HSIRDY))
     ;
