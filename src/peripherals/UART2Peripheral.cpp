@@ -10,7 +10,7 @@ void USART2_IRQHandler() { uart2Instance.handleInterrupt(); }
 #ifndef USE_USART3
 // to support printf via USART2
 int __io_putchar(int ch) {
-  uart2Instance.send(std::string{static_cast<char>(ch)}, false);
+  uart2Instance.send({reinterpret_cast<char *>(&ch), 1});
   return ch;
 }
 #endif

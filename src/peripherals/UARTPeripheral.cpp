@@ -31,14 +31,10 @@ void UARTPeripheral::start() {
  * Send UART message
  * 
  * @param data data to send
- * @param appendNewLine whether to append '\n' to the data
  */
-void UARTPeripheral::send(std::string data, bool appendNewLine) {
-  if (appendNewLine) {
-    data += "\n";
-  }
+void UARTPeripheral::send(std::string_view data) {  
   for (size_t i = 0; i < data.length(); i++) {
-    getPeripheral()->DR = data.at(i);
+    getPeripheral()->DR = data[i];
     // wait DR to be ready for next data
     while (!(getPeripheral()->SR & USART_SR_TXE))
       ;

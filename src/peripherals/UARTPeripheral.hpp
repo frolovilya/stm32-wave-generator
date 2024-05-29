@@ -15,7 +15,7 @@ class UARTPeripheral : public Peripheral<USART_TypeDef> {
 public:
   void configure() override;
   void start();
-  void send(std::string data, bool appendNewLine = true);
+  void send(std::string_view data);
   void receive(std::function<UART_RX_Handler> callback);
   void handleInterrupt();
 
