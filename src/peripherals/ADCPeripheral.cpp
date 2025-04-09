@@ -3,7 +3,7 @@
 
 ADC_TypeDef *ADCPeripheral::getPeripheral() const { return ADC1; }
 
-constexpr uint16_t *vRefIntCalibratedAddress = (uint16_t *)0x1FFF7A2A;
+const uint16_t *vRefIntCalibratedAddress = reinterpret_cast<uint16_t *>(0x1FFF7A2A);
 constexpr double vRefIntCalibratedViltage = 3.3;
 
 void ADCPeripheral::configure() {

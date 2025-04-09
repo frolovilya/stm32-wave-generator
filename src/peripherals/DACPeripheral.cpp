@@ -74,6 +74,17 @@ void DACPeripheral::configureTimer() {
   TIM2->CR2 |= TIM_CR2_MMS_1;
 }
 
+// DAC final clock frequency
+uint32_t DACPeripheral::getFrequency() const {
+  // TODO: find better way of obtaining final frequency value
+  return 84000000 / (TIM2->PSC + 1) / (TIM2->ARR + 1);
+}
+
+// Max signal amplitude (value) for 12-bit DAC
+uint16_t DACPeripheral::getMaxValue() const {
+  return 0xfff;
+}
+
 void DACPeripheral::configure() {
   RCC->APB1ENR |= RCC_APB1ENR_DACEN; // enable DAC clock
 

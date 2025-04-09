@@ -1,20 +1,22 @@
 #ifndef WAVEFACTORY_HPP
 #define WAVEFACTORY_HPP
 
+#include "Frequency.hpp"
+#include "Level.hpp"
 #include "WaveForm.hpp"
 #include "Welle.hpp"
 #include <string>
 #include <vector>
 
-// Max signal amplitude (value) for 12-bit DAC
-constexpr double peakToPeak = 0xfff;
-
 template <typename T>
-std::vector<T> generateWavePeriod(const WaveForm waveForm,
-                                  const int samplingRate, 
-                                  const int frequency,
-                                  const double peakToPeak,
-                                  const double phaseShift = 0) {
+std::vector<T> generateSignalPeriod(const WaveForm waveForm,
+                                    const int frequency,
+                                    const double signalLevelVolts) {
+
+  const int samplingRate = getSamplingRate();
+  const double peakToPeak = getPeakToPeak(signalLevelVolts);
+  const double phaseShift = 0;
+
   switch (waveForm) {
   case WaveForm::SQUARE:
     return welle::SquareWave<T>(samplingRate)

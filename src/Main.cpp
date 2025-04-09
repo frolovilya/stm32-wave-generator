@@ -1,7 +1,8 @@
 #include "peripherals/Peripherals.hpp"
-#include "waves/Frequency.hpp"
-#include "waves/WaveFactory.hpp"
-#include "waves/WaveForm.hpp"
+#include "signals/Frequency.hpp"
+#include "signals/Level.hpp"
+#include "signals/SignalFactory.hpp"
+#include "signals/WaveForm.hpp"
 #include <iostream>
 #include <memory>
 #include <sstream>
@@ -14,20 +15,20 @@ using namespace std;
 vector<uint16_t> samples;
 
 void printUsageHelp() {
-  cout << "Usage: sine|square|saw|triangle " << minWaveFrequency << ".."
-       << maxWaveFrequency << "\n";
+  cout << "Usage: sine|square|saw|triangle frequency(Hz) level(V)\n";
 }
 
-void printCurrentWaveInfo(WaveForm waveForm, uint16_t frequency) {
-  cout << "Generating " << frequency << "Hz " << waveFormToString(waveForm)
-       << " wave\n";
+void printCurrentSignalInfo(WaveForm waveForm, uint16_t frequency,
+                            double level) {
+  cout << "Generating " << waveFormToString(waveForm) << " " << frequency
+       << "Hz "
+       << " " << level << "V"
+       << " signal\n";
 }
 
-void stream(WaveForm waveForm, uint16_t frequency) {
-  double Vdda = adcInstance.getVdda();
-    
-  samples = generateWavePeriod<uint16_t>(waveForm, samplingRate, frequency, peakToPeak);
-  printCurrentWaveInfo(waveForm, frequency);
+void stream(WaveForm waveForm, uint16_t frequency, double level) {
+  samples = generateSignalPeriod<uint16_t>(waveForm, frequency, level);
+  printCurrentSignalInfo(waveForm, frequency, level);
 
   dacInstance.start(samples.data(), samples.size());
 }
@@ -40,14 +41,15 @@ void parseAndApplyReceivedCommand(std::string str) {
     std::back_inserter(splitString) = item;
   }
 
-  if (splitString.size() != 2) {
+  if (splitString.size() != 3) {
     throw std::invalid_argument(
-        "Expecting two input parameters: wave and frequency");
+        "Expecting three input parameters: wave, frequency, level");
   }
 
   WaveForm waveForm = stringToWaveForm(splitString[0]);
   uint16_t frequency = stringToFrequency(splitString[1]);
-  stream(waveForm, frequency);
+  double level = std::stod(splitString[2]);
+  stream(waveForm, frequency, level);
 }
 
 void tryParseAndApplyReceivedCommand(std::string str) {
@@ -78,7 +80,7 @@ int main() {
 
   adcInstance.configure();
 
-  stream(defaultWaveForm, defaultWaveFrequency);
+  stream(defaultWaveForm, defaultWaveFrequency, defaultLevelVolts);
 
   while (1) {
   }

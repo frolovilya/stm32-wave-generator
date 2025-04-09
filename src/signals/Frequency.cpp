@@ -1,4 +1,7 @@
 #include "Frequency.hpp"
+#include "../peripherals/Peripherals.hpp"
+
+uint32_t getSamplingRate() { return dacInstance.getFrequency(); }
 
 /**
  * Convert string to frequency input taking minWaveFrequency and

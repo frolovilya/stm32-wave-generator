@@ -71,9 +71,10 @@ add_executable(${CMAKE_PROJECT_NAME}
     ./src/sys/system_stm32f4xx.c
     ./src/sys/startup_stm32f446xx.s
     
-    ./src/waves/WaveForm.cpp
-    ./src/waves/Frequency.cpp
-    
+    ./src/signals/WaveForm.cpp
+    ./src/signals/Frequency.cpp
+    ./src/signals/Level.cpp
+
     ./src/peripherals/Peripherals.cpp
     ./src/peripherals/RCCPeripheral.cpp
     ./src/peripherals/UARTPeripheral.cpp
