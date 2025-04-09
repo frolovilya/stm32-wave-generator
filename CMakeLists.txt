@@ -31,7 +31,7 @@ message("Build type: " ${CMAKE_BUILD_TYPE})
 
 # STM32 CLI
 if(NOT PROGRAMMER_CLI)
-    set(PROGRAMMER_CLI /opt/ST/STM32CubeCLT_1.15.1/STM32CubeProgrammer/bin/STM32_Programmer_CLI)
+    set(PROGRAMMER_CLI /opt/ST/STM32CubeCLT_1.18.0/STM32CubeProgrammer/bin/STM32_Programmer_CLI)
 endif()
 message("Programmer CLI: " ${PROGRAMMER_CLI})
 
@@ -80,6 +80,7 @@ add_executable(${CMAKE_PROJECT_NAME}
     ./src/peripherals/UART2Peripheral.cpp
     ./src/peripherals/UART3Peripheral.cpp
     ./src/peripherals/DACPeripheral.cpp
+    ./src/peripherals/ADCPeripheral.cpp
 )
 
 find_path(WELLE_HEADER_PATH Welle.hpp PATHS /usr/local/include)

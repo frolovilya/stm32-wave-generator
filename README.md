@@ -5,16 +5,9 @@ STM32F4 analog wave generator with precise UART control. Uses built-in DAC to pr
 
 ## Build
 
-Install [ARM GNU Toolchain](https://developer.arm.com/downloads/-/arm-gnu-toolchain-downloads). `arm-none-eabi` compiler is required.
+Install [Welle](https://github.com/frolovilya/Welle) library header.
 
-On Mac could be done with _brew_ as well:
-```sh
-brew install --cask gcc-arm-embedded
-```
-
-Install [STM32CubeProgrammer](https://www.st.com/en/development-tools/stm32cubeprog.html) to flash STM32 via ST-Link.
-
-There's also an all-in-one [STM32CubeCLT](https://www.st.com/en/development-tools/stm32cubeclt.html?rt=um&id=UM3088) command tools package available.
+Install [STM32CubeCLT](https://www.st.com/en/development-tools/stm32cubeclt.html?rt=um&id=UM3088) command tools package with arm-none-eabi-gcc, STM32_Programmer_CLI and ST-LINK_gdbserver tools included.
 
 Build the project using CMake:
 
@@ -22,7 +15,7 @@ Build the project using CMake:
 mkdir build; cd build
 
 # Using USART2 by default if -DUSE_USART3=1 flag isn't provided
-cmake ../ -DPROGRAMMER_CLI=/opt/ST/STM32CubeCLT_1.15.1/STM32CubeProgrammer/bin \
+cmake ../ -DPROGRAMMER_CLI=/opt/ST/STM32CubeCLT_1.18.0/STM32CubeProgrammer/bin/STM32_Programmer_CLI \
     -DUSE_USART3=0
 
 make

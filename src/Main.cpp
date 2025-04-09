@@ -10,9 +10,6 @@
 
 using namespace std;
 
-// Max signal amplitude (value) for 12-bit DAC
-constexpr double amplitude = 0xfff;
-
 // Samples buffer
 vector<uint16_t> samples;
 
@@ -27,8 +24,9 @@ void printCurrentWaveInfo(WaveForm waveForm, uint16_t frequency) {
 }
 
 void stream(WaveForm waveForm, uint16_t frequency) {
-  samples = generateWavePeriod<uint16_t>(waveForm, samplingRate, frequency,
-                                         amplitude);
+  double Vdda = adcInstance.getVdda();
+    
+  samples = generateWavePeriod<uint16_t>(waveForm, samplingRate, frequency, peakToPeak);
   printCurrentWaveInfo(waveForm, frequency);
 
   dacInstance.start(samples.data(), samples.size());
@@ -77,6 +75,8 @@ int main() {
   uart->receive(&tryParseAndApplyReceivedCommand);
 
   dacInstance.configure();
+
+  adcInstance.configure();
 
   stream(defaultWaveForm, defaultWaveFrequency);
 
