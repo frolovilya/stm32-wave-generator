@@ -39,7 +39,8 @@ TX **PC10**, RX **PC11**.
 
 ### Command Syntax
 ```sh
-sine|square|saw|triangle 20..20000LF
+# WaveForm Frequency(Hz) Level(mV)
+sine|square|saw|triangle 20..20000 1..1500LF
 ```
 Note that `LF(\n)` at the end is required.
 

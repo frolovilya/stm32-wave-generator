@@ -11,7 +11,7 @@ class ADCPeripheral : public Peripheral<ADC_TypeDef> {
 public:
   void configure() override;
   ADC_TypeDef *getPeripheral() const override;
-  double getVdda();
+  uint16_t getVddaMV();
 
 private:
   void configureGPIOA();

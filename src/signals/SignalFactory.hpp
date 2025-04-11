@@ -10,11 +10,11 @@
 
 template <typename T>
 std::vector<T> generateSignalPeriod(const WaveForm waveForm,
-                                    const int frequency,
-                                    const double signalLevelVolts) {
+                                    const uint16_t frequency,
+                                    const uint16_t signalLevelMV) {
 
   const int samplingRate = getSamplingRate();
-  const double peakToPeak = getPeakToPeak(signalLevelVolts);
+  const uint16_t peakToPeak = getPeakToPeak(signalLevelMV);
   const double phaseShift = 0;
 
   switch (waveForm) {

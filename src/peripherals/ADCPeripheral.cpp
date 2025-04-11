@@ -4,7 +4,7 @@
 ADC_TypeDef *ADCPeripheral::getPeripheral() const { return ADC1; }
 
 const uint16_t *vRefIntCalibratedAddress = reinterpret_cast<uint16_t *>(0x1FFF7A2A);
-constexpr double vRefIntCalibratedViltage = 3.3;
+constexpr uint16_t vRefIntCalibratedVoltageMV = 3300;
 
 void ADCPeripheral::configure() {
     RCC->APB2ENR |= RCC_APB2ENR_ADC1EN; // enable ADC clock
@@ -40,8 +40,8 @@ uint16_t ADCPeripheral::getVRefIntCalibrated() const {
 }
 
 /**
- * Calculate Vdda based on Vrefint and Vrefint_calibrated
+ * Calculate Vdda (mV) based on Vrefint and Vrefint_calibrated
  */
-double ADCPeripheral::getVdda() {
-    return vRefIntCalibratedViltage * getVRefIntCalibrated() / getVRefInt();
+uint16_t ADCPeripheral::getVddaMV() {
+    return vRefIntCalibratedVoltageMV * getVRefIntCalibrated() / getVRefInt();
 }
